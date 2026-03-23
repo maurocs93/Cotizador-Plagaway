@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Plagaway">
+<meta name="theme-color" content="#f5c800">
+<link rel="manifest" href="manifest.json">
+<title>Plagaway · Cotizador</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:     #0d0d0d;
+  --bg2:    #141414;
+  --border: #272727;
+  --border2:#1e1e1e;
+  --yellow: #f5c800;
+  --yellow2:#c9a200;
+  --yellow3:#7a6100;
+  --brown:  #8b5e2a;
+  --brown2: #5a3a10;
+  --text:   #f5f0e8;
+  --text2:  #c8c0b0;
+  --muted:  #888880;
+  --muted2: #555550;
+  --muted3: #333330;
+  --red:    #ff4444;
+  --blue:   #4ac8f0;
+  --green:  #72c040;
+}
+
+html, body {
+  height: 100%; background: var(--bg);
+  color: var(--text);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  overscroll-behavior: none;
+}
+
+#app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* HEADER */
+.header {
+  padding: 16px 20px 12px; border-bottom: 2px solid var(--yellow3);
+  display: flex; justify-content: space-between; align-items: flex-start;
+  position: sticky; top: 0; background: var(--bg); z-index: 10;
+}
+.logo { display: flex; align-items: center; gap: 8px; }
+.logo-wordmark { font-size: 24px; font-weight: 900; color: var(--text); letter-spacing: -1px; line-height: 1; }
+.logo-wordmark b { color: var(--yellow); }
+.logo-pill {
+  background: var(--yellow); color: #0d0d0d;
+  font-size: 7px; font-weight: 900; letter-spacing: 0.15em;
+  padding: 3px 6px; text-transform: uppercase; align-self: flex-start; margin-top: 2px;
+}
+.header-sub { font-size: 9px; color: var(--muted2); margin-top: 5px; letter-spacing: 0.05em; }
+.btn-reset {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 8px 12px; font-size: 9px;
+  font-weight: 700; letter-spacing: 0.1em; cursor: pointer;
+  text-transform: uppercase; margin-top: 2px; font-family: inherit;
+}
+
+/* PROGRESS */
+.progress { display: flex; padding: 0 20px; background: var(--bg); border-bottom: 1px solid var(--border2); }
+.ps { flex: 1; padding: 8px 0; }
+.pb { height: 3px; background: var(--border2); transition: background 0.3s; }
+.pb.done { background: var(--yellow2); }
+.pb.active { background: var(--yellow); }
+.pl { font-size: 8px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted3); margin-top: 5px; transition: color 0.3s; }
+.pl.active { color: var(--yellow); }
+.pl.done { color: var(--muted2); }
+
+/* CONTENT */
+.content { padding: 24px 20px 60px; flex: 1; }
+.fade { animation: fu 0.25s ease both; }
+@keyframes fu { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* SECTION TITLE */
+.st { margin-bottom: 20px; display: flex; align-items: baseline; gap: 10px; }
+.st-num { font-size: 10px; font-weight: 900; color: #0d0d0d; background: var(--yellow); padding: 3px 7px; letter-spacing: 0.1em; }
+.st-h { font-size: 20px; font-weight: 700; color: var(--text); }
+
+/* LABEL */
+.lbl { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; display: block; }
+
+/* CARDS */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.g1 { display: grid; gap: 8px; }
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text2); padding: 14px 16px;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.12s; text-align: left; width: 100%; -webkit-appearance: none;
+}
+.card:active { transform: scale(0.97); }
+.card.on { background: #1c1700; border-color: var(--yellow); color: var(--text); }
+.ct { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.cs { font-size: 10px; color: var(--muted2); }
+.ch { font-size: 10px; color: var(--muted3); margin-top: 4px; font-weight: 500; }
+.ctag { font-size: 9px; color: var(--red); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* INPUT */
+.irow { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.im2 {
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); padding: 12px 14px;
+  font-size: 32px; font-weight: 300; font-family: inherit;
+  width: 130px; outline: none; -webkit-appearance: none;
+}
+.im2:focus { border-color: var(--yellow); }
+.iu { color: var(--muted); font-size: 18px; }
+.bsug {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-size: 9px; font-weight: 700;
+  padding: 6px 10px; cursor: pointer; letter-spacing: 0.08em;
+  text-transform: uppercase; font-family: inherit;
+}
+
+/* TOGGLE */
+.trow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 14px; background: var(--bg2);
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+}
+.trow.on { border-color: var(--yellow); background: #181400; }
+.tlbl { font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.2s; }
+.trow.on .tlbl { color: var(--text); }
+.tsub { font-size: 10px; color: var(--muted2); margin-top: 2px; }
+.tsw {
+  width: 36px; height: 20px; background: var(--border);
+  border-radius: 10px; position: relative; flex-shrink: 0; transition: background 0.2s;
+}
+.trow.on .tsw { background: var(--yellow); }
+.tkn {
+  width: 14px; height: 14px; background: var(--muted3);
+  border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: all 0.2s;
+}
+.trow.on .tkn { left: 19px; background: #0d0d0d; }
+
+/* RANGE */
+input[type=range] {
+  width: 100%; accent-color: var(--yellow); height: 4px;
+  -webkit-appearance: none; background: var(--border);
+  border-radius: 2px; outline: none; display: block;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px;
+  background: var(--yellow); border-radius: 50%; cursor: pointer;
+}
+.rlbls { display: flex; justify-content: space-between; font-size: 9px; font-weight: 700; color: var(--muted2); margin-top: 6px; text-transform: uppercase; }
+
+/* BLOCK */
+.blk { margin-bottom: 24px; }
+
+/* CTA */
+.cta {
+  width: 100%; background: var(--yellow); color: #0d0d0d;
+  border: none; padding: 18px; font-size: 13px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  font-family: inherit; font-weight: 900;
+  cursor: pointer; margin-top: 28px; transition: opacity 0.15s;
+}
+.cta:active { opacity: 0.85; }
+
+/* RESULT */
+.rbox { border: 2px solid var(--yellow); padding: 24px; background: var(--bg2); margin-bottom: 16px; }
+.rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.rdiv { border: none; border-top: 1px solid var(--border2); margin-bottom: 20px; }
+.rpl { font-size: 9px; font-weight: 800; color: var(--muted2); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
+.rpv { font-size: 26px; font-weight: 300; }
+.rpv.y { color: var(--yellow); font-weight: 700; }
+.rpv.b { color: var(--blue); }
+.rpv.w { color: var(--text); }
+.rps { font-size: 9px; color: var(--muted3); margin-top: 3px; }
+
+.cbox { border: 1px solid var(--border); padding: 18px; background: var(--bg2); margin-bottom: 12px; }
+.cbt { font-size: 9px; font-weight: 800; color: var(--muted2); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+.crow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border2); }
+.crow:last-child { border-bottom: none; }
+.crl { font-size: 11px; color: var(--muted); }
+.crv { font-size: 12px; font-weight: 600; }
+.cdiv { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+.ibar {
+  padding: 12px 14px; background: var(--bg2);
+  border: 1px solid var(--border); border-left: 3px solid var(--yellow);
+  font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;
+}
+.ibar strong { color: var(--yellow); }
+.ibar.bl { border-left-color: var(--blue); }
+.ibar.bl strong { color: var(--blue); }
+
+/* PLAGA DOT */
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; margin-right: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="header">
+    <div>
+      <div class="logo">
+        <div class="logo-wordmark">PLAGA<b>W</b>AY</div>
+        <div class="logo-pill">Cotizador</div>
+      </div>
+      <div class="header-sub">Hermosillo, Son. · COFEPRIS · Uso interno</div>
+    </div>
+    <button class="btn-reset" id="btnr" style="display:none" onclick="reset()">← Nueva</button>
+  </div>
+
+  <div class="progress">
+    <div class="ps"><div class="pb" id="pb1"></div><div class="pl" id="pl1">Lugar</div></div>
+    <div class="ps"><div class="pb" id="pb2"></div><div class="pl" id="pl2">Plaga</div></div>
+    <div class="ps"><div class="pb" id="pb3"></div><div class="pl" id="pl3">Detalles</div></div>
+    <div class="ps"><div class="pb" id="pb4"></div><div class="pl" id="pl4">Precio</div></div>
+  </div>
+
+  <div class="content fade" id="cnt"></div>
+</div>
+
+<script>
+const FIJOS=167, GAS=123, CONS=6.25, PA=16.25, PB=21.73;
+
+const PLAGAS={
+  comun:    {label:'Plaga Común',         sub:'Hormigas, cucarachas, arácnidos',      color:'#f5c800',litros:.075,b:false,tag:false},
+  voladores:{label:'Insectos Voladores',  sub:'Moscas, mosquitos, zancudos',          color:'#4ac8f0',litros:.06, b:false,tag:false},
+  especial: {label:'Plaga Especial',      sub:'Chinches de cama, termita, roedores',  color:'#ff4444',litros:.10, b:true, tag:true},
+  alacran:  {label:'Alacrán (correctivo)',sub:'Primer servicio con presencia activa', color:'#ff8844',litros:.12, b:true, tag:true},
+};
+
+const LUGARES=[
+  {id:'hogar_chico', label:'Hogar chico',     sub:'~180 m²',           m2:180, mult:1.0 },
+  {id:'hogar_grande',label:'Hogar grande',    sub:'+250 m²',           m2:280, mult:1.05},
+  {id:'restaurante', label:'Restaurante',     sub:'Food service / COFEPRIS',m2:150,mult:1.2},
+  {id:'oficina',     label:'Oficinas',        sub:'Corporativo',       m2:200, mult:1.0 },
+  {id:'bodega',      label:'Bodega / Almacén',sub:'Industrial',        m2:500, mult:1.15},
+  {id:'hotel',       label:'Hotel',           sub:'Hospedaje',         m2:400, mult:1.25},
+  {id:'evento',      label:'Evento / Festival',sub:'Expogan, conciertos',m2:1000,mult:1.35},
+  {id:'planta',      label:'Planta Industrial',sub:'Manufactura',      m2:800, mult:1.3 },
+  {id:'otro',        label:'Otro',            sub:'Captura manual',    m2:0,   mult:1.0 },
+];
+
+const FREQS=[
+  {id:'unica',     label:'Única vez',      desc:0,    g:'Garantía 48 horas'},
+  {id:'men3',      label:'Póliza 3 meses', desc:.03,  g:'Revisita sin costo'},
+  {id:'men6',      label:'Póliza 6 meses', desc:.05,  g:'Revisita sin costo'},
+  {id:'men12',     label:'Póliza 12 meses',desc:.09,  g:'Revisita + prioridad'},
+];
+
+let S={step:1,lugar:null,m2:'',plaga:null,refuerzo:false,freq:'unica',foraneo:false,cert:false,hormiga:false,margen:38,result:null};
+
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-MX');
+
+function calc(){
+  const a=parseFloat(S.m2), p=PLAGAS[S.plaga], l=S.lugar, f=FREQS.find(x=>x.id===S.freq);
+  const lA=a*p.litros, lB=p.b?a*p.litros*.4:0;
+  let ci=lA*PA+lB*PB; if(S.hormiga)ci+=50;
+  const co=CONS+GAS+(S.foraneo?200:0);
+  const base=ci+co+FIJOS;
+  const cert=S.cert?450:0;
+  const denom=1-(S.margen/100)-.10;
+  let precio=(base/denom)*l.mult*(S.refuerzo?.70:1)+cert;
+  const pDesc=precio*(1-f.desc);
+  return{
+    ci,co,fijos:FIJOS,
+    mano:pDesc*.10,util:pDesc*(S.margen/100),
+    pDesc,pIVA:pDesc*1.16,pIntro:pDesc*.95,pIntroIVA:pDesc*.95*1.16,
+    lA:lA.toFixed(1),lB:lB.toFixed(1),g:f.g,desc:f.desc*100
+  };
+}
+
+function upProg(){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('pb'+i).className='pb'+(S.step>i?' done':S.step===i?' active':'');
+    document.getElementById('pl'+i).className='pl'+(S.step>i?' done':S.step===i?' active':'');
+  });
+}
+
+function render(){
+  upProg();
+  document.getElementById('btnr').style.display=S.step>1?'':'none';
+  const c=document.getElementById('cnt');
+  c.className='content fade';
+  void c.offsetWidth;
+  if(S.step===1) s1(c);
+  else if(S.step===2) s2(c);
+  else if(S.step===3) s3(c);
+  else s4(c);
+}
+
+function s1(c){
+  c.innerHTML=`
+    <div class="st"><span class="st-num">01</span><span class="st-h">¿Dónde es el servicio?</span></div>
+    <div class="g2">
+      ${LUGARES.map(l=>`
+        <button class="card" onclick="selLugar('${l.id}')">
+          <div class="ct">${l.label}</div>
+          <div class="cs">${l.sub}</div>
+          ${l.m2?`<div class="ch">${l.m2} m² sugerido</div>`:''}
+        </button>`).join('')}
+    </div>`;
+}
+
+function selLugar(id){
+  S.lugar=LUGARES.find(l=>l.id===id);
+  if(S.lugar.m2)S.m2=String(S.lugar.m2);
+  S.step=2; render();
+}
+
+function s2(c){
+  const l=S.lugar;
+  c.innerHTML=`
+    <div class="st"><span class="st-num">02</span><span class="st-h">Plaga y área</span></div>
+    <div class="blk">
+      <span class="lbl">Metros cuadrados</span>
+      <div class="irow">
+        <input class="im2" type="number" id="m2i" value="${S.m2}" oninput="S.m2=this.value" inputmode="numeric">
+        <span class="iu">m²</span>
+        ${l.m2?`<button class="bsug" onclick="document.getElementById('m2i').value=S.m2='${l.m2}'">Sugerido (${l.m2})</button>`:''}
+      </div>
+    </div>
+    <div class="blk">
+      <span class="lbl">Tipo de plaga</span>
+      <div class="g1">
+        ${Object.entries(PLAGAS).map(([id,p])=>`
+          <button class="card ${S.plaga===id?'on':''}" onclick="selPlaga('${id}')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="ct"><span class="dot" style="background:${p.color}"></span>${p.label}</div>
+                <div class="cs" style="margin-top:3px">${p.sub}</div>
+              </div>
+              ${p.tag?`<span class="ctag">Diferenciado</span>`:''}
+            </div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function selPlaga(id){
+  if(!S.m2||parseFloat(S.m2)<=0){
+    const el=document.getElementById('m2i');
+    el.focus(); el.style.borderColor='#ff4444';
+    setTimeout(()=>el.style.borderColor='',1500);
+    return;
+  }
+  S.plaga=id; S.step=3; render();
+}
+
+function s3(c){
+  c.innerHTML=`
+    <div class="st"><span class="st-num">03</span><span class="st-h">Condiciones</span></div>
+
+    <div class="blk">
+      <span class="lbl">¿Primer servicio o refuerzo?</span>
+      <div class="g2" style="margin-top:10px">
+        <button class="card ${!S.refuerzo?'on':''}" onclick="S.refuerzo=false;render()">
+          <div class="ct">Primer servicio</div><div class="cs">Precio completo</div>
+        </button>
+        <button class="card ${S.refuerzo?'on':''}" onclick="S.refuerzo=true;render()">
+          <div class="ct">Refuerzo</div><div class="cs">−30% en precio</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Frecuencia / contrato</span>
+      <div class="g2" style="margin-top:10px">
+        ${FREQS.map(f=>`
+          <button class="card ${S.freq===f.id?'on':''}" onclick="S.freq='${f.id}';render()">
+            <div class="ct">${f.label}</div>
+            ${f.desc?`<div class="cs" style="color:var(--green)">−${f.desc*100}% dcto.</div>`:''}
+            <div class="cs">${f.g}</div>
+          </button>`).join('')}
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Extras</span>
+      <div class="g1" style="margin-top:10px">
+        <div class="trow ${S.foraneo?'on':''}" onclick="S.foraneo=!S.foraneo;render()">
+          <div><div class="tlbl">Zona foránea</div><div class="tsub">+$200 traslado extendido</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        <div class="trow ${S.cert?'on':''}" onclick="S.cert=!S.cert;render()">
+          <div><div class="tlbl">Certificado COESPRISSON</div><div class="tsub">+$450 · Documento oficial</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        <div class="trow ${S.hormiga?'on':''}" onclick="S.hormiga=!S.hormiga;render()">
+          <div><div class="tlbl">Tratamiento hormigueros</div><div class="tsub">+$50 · Producto específico</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Margen objetivo: <span style="color:var(--yellow)" id="mv">${S.margen}%</span></span>
+      <p style="font-size:10px;color:var(--muted2);margin:4px 0 12px">+10% mano de obra socios · Total retenido: ${S.margen+10}%</p>
+      <input type="range" min="20" max="55" value="${S.margen}"
+        oninput="S.margen=parseInt(this.value);document.getElementById('mv').textContent=S.margen+'%'">
+      <div class="rlbls"><span>20% · conservador</span><span>55% · ambicioso</span></div>
+    </div>
+
+    <button class="cta" onclick="doCalc()">Calcular precio →</button>`;
+}
+
+function doCalc(){ S.result=calc(); S.step=4; render(); }
+
+function s4(c){
+  const r=S.result, ev=S.lugar?.id==='evento';
+  c.innerHTML=`
+    <div class="st"><span class="st-num">04</span><span class="st-h">Cotización</span></div>
+
+    <div class="rbox">
+      <div class="rgrid">
+        <div>
+          <div class="rpl">Precio sugerido</div>
+          <div class="rpv y">${fmt(r.pDesc)}</div>
+          <div class="rps">sin IVA</div>
+        </div>
+        <div>
+          <div class="rpl">Con IVA (16%)</div>
+          <div class="rpv w">${fmt(r.pIVA)}</div>
+          <div class="rps">precio final cliente</div>
+        </div>
+      </div>
+      <hr class="rdiv">
+      <div class="rgrid">
+        <div>
+          <div class="rpl">Precio intro (−5%)</div>
+          <div class="rpv b">${fmt(r.pIntro)}</div>
+          <div class="rps">sin IVA · para cerrar</div>
+        </div>
+        <div>
+          <div class="rpl">Intro con IVA</div>
+          <div class="rpv w">${fmt(r.pIntroIVA)}</div>
+          <div class="rps">precio intro cliente</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cbox">
+      <div class="cbt">Desglose de costos</div>
+      <div class="crow"><span class="crl">Insumos (${r.lA}L A${parseFloat(r.lB)>0?' + '+r.lB+'L B':''})</span><span class="crv" style="color:var(--muted)">${fmt(r.ci)}</span></div>
+      <div class="crow"><span class="crl">Operativo (gas${S.foraneo?' + foráneo':''})</span><span class="crv" style="color:var(--muted)">${fmt(r.co)}</span></div>
+      <div class="crow"><span class="crl">Fijos prorrateados</span><span class="crv" style="color:var(--muted)">${fmt(r.fijos)}</span></div>
+      <div class="cdiv"></div>
+      <div class="crow"><span class="crl">Mano de obra socios (10%)</span><span class="crv" style="color:var(--yellow)">${fmt(r.mano)}</span></div>
+      <div class="crow"><span class="crl">Utilidad empresa (${S.margen}%)</span><span class="crv" style="color:var(--green)">${fmt(r.util)}</span></div>
+    </div>
+
+    <div class="ibar">
+      <strong>Garantía:</strong> ${r.g}
+      ${r.desc>0?`&nbsp;·&nbsp;<span style="color:var(--green)">Descuento ${r.desc}% aplicado</span>`:''}
+    </div>
+
+    ${ev?`<div class="ibar bl"><strong>Ref. Expogan 2024:</strong> Competencia cobró $6,600 + IVA. Tu intro (${fmt(r.pIntro)} + IVA) es ${r.pIntro<6600?'competitivo, deja margen para negociar.':'similar al mercado — justifica con el certificado.'}</div>`:''}
+
+    <button class="cta" onclick="reset()">← Nueva cotización</button>`;
+}
+
+function reset(){
+  S={step:1,lugar:null,m2:'',plaga:null,refuerzo:false,freq:'unica',foraneo:false,cert:false,hormiga:false,margen:38,result:null};
+  render();
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+render();
+</script>
+</body>
+</html>
