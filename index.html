@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Plagaway">
+<meta name="theme-color" content="#f5c800">
+<link rel="manifest" href="manifest.json">
+<title>Plagaway · Cotizador</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;
+  --border:#272727;--border2:#1e1e1e;
+  --y:#f5c800;--y2:#c9a200;--y3:#7a6100;--y4:#1f1a00;
+  --br:#8b5e2a;--br2:#5a3a10;--br3:#3a2408;
+  --tx:#f5f0e8;--tx2:#c8c0b0;
+  --mu:#888880;--mu2:#555550;--mu3:#333330;
+  --red:#ff4444;--blue:#4ac8f0;--green:#72c040;--orange:#ff8844;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Helvetica Neue',Arial,sans-serif;overscroll-behavior:none;font-size:15px}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{padding:14px 18px 10px;border-bottom:2px solid var(--y3);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg);z-index:20}
+.logo-wm{font-size:22px;font-weight:900;color:var(--tx);letter-spacing:-1px;line-height:1}
+.logo-wm b{color:var(--y)}
+.logo-pill{background:var(--y);color:#0d0d0d;font-size:7px;font-weight:900;letter-spacing:.15em;padding:3px 6px;text-transform:uppercase;align-self:flex-start;margin-top:2px}
+.hdr-row{display:flex;align-items:center;gap:8px}
+.hdr-sub{font-size:9px;color:var(--mu2);margin-top:5px;letter-spacing:.05em}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--mu);padding:7px 11px;font-size:9px;font-weight:700;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;font-family:inherit}
+
+/* PROGRESS */
+.prog{display:flex;padding:0 18px;background:var(--bg);border-bottom:1px solid var(--border2)}
+.ps{flex:1;padding:7px 0}
+.pb{height:3px;background:var(--border2);transition:background .3s}
+.pb.done{background:var(--y2)}.pb.act{background:var(--y)}
+.pl{font-size:8px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mu3);margin-top:4px;transition:color .3s}
+.pl.act{color:var(--y)}.pl.done{color:var(--mu2)}
+
+/* CONTENT */
+.cnt{padding:20px 18px 80px;flex:1}
+.fade{animation:fu .22s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+/* TITLES */
+.st{margin-bottom:18px;display:flex;align-items:baseline;gap:10px}
+.st-n{font-size:10px;font-weight:900;color:#0d0d0d;background:var(--y);padding:3px 7px;letter-spacing:.1em}
+.st-h{font-size:19px;font-weight:700;color:var(--tx)}
+.lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;display:block}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.g1{display:grid;gap:7px}
+.card{background:var(--bg2);border:1px solid var(--border);color:var(--tx2);padding:13px 15px;cursor:pointer;font-family:inherit;transition:all .12s;text-align:left;width:100%;-webkit-appearance:none}
+.card:active{transform:scale(.97)}
+.card.on{background:var(--y4);border-color:var(--y);color:var(--tx)}
+.card.best{border-color:var(--y2)}
+.ct{font-size:14px;font-weight:600;margin-bottom:3px}
+.cs{font-size:10px;color:var(--mu2)}
+.ch{font-size:10px;color:var(--mu3);margin-top:4px;font-weight:500}
+.ctag{font-size:9px;color:var(--red);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.cgreen{font-size:9px;color:var(--green);font-weight:800;letter-spacing:.08em}
+.badge-best{background:var(--y);color:#0d0d0d;font-size:8px;font-weight:900;padding:2px 6px;letter-spacing:.1em;display:inline-block;margin-bottom:5px}
+
+/* INPUT */
+.irow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.im2{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:11px 13px;font-size:30px;font-weight:300;font-family:inherit;width:130px;outline:none;-webkit-appearance:none}
+.im2:focus{border-color:var(--y)}
+.iu{color:var(--mu);font-size:18px}
+.bsug{background:transparent;border:1px solid var(--border);color:var(--mu);font-size:9px;font-weight:700;padding:6px 10px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-family:inherit}
+
+/* TOGGLE */
+.trow{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.trow.on{border-color:var(--y);background:var(--y4)}
+.tlbl{font-size:13px;font-weight:500;color:var(--mu);transition:color .2s}
+.trow.on .tlbl{color:var(--tx)}
+.tsub{font-size:10px;color:var(--mu2);margin-top:2px}
+.tsw{width:36px;height:20px;background:var(--border);border-radius:10px;position:relative;flex-shrink:0;transition:background .2s}
+.trow.on .tsw{background:var(--y)}
+.tkn{width:14px;height:14px;background:var(--mu3);border-radius:50%;position:absolute;top:3px;left:3px;transition:all .2s}
+.trow.on .tkn{left:19px;background:#0d0d0d}
+
+/* RANGE */
+input[type=range]{width:100%;accent-color:var(--y);height:4px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--y);border-radius:50%;cursor:pointer}
+.rlbls{display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:var(--mu2);margin-top:6px;text-transform:uppercase}
+
+/* BLOCKS */
+.blk{margin-bottom:22px}
+
+/* CTA */
+.cta{width:100%;background:var(--y);color:#0d0d0d;border:none;padding:17px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-family:inherit;font-weight:900;cursor:pointer;margin-top:26px;transition:opacity .15s}
+.cta:active{opacity:.85}
+.cta.sec{background:transparent;border:1px solid var(--border);color:var(--mu);margin-top:10px;font-weight:700}
+
+/* CHEMICAL LIST */
+.chem-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);margin-bottom:6px}
+.chem-name{font-size:13px;font-weight:600;color:var(--tx)}
+.chem-price{font-size:11px;color:var(--mu);font-weight:500}
+.chem-del{background:transparent;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;font-weight:700}
+.add-chem-row{display:grid;grid-template-columns:1fr auto auto;gap:7px;margin-top:8px}
+.inp-text{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:100%}
+.inp-text:focus{border-color:var(--y)}
+.inp-num{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:80px;-webkit-appearance:none}
+.inp-num:focus{border-color:var(--y)}
+.btn-add{background:var(--y);color:#0d0d0d;border:none;padding:10px 14px;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit}
+
+/* CHEM SELECT */
+.chem-sel-item{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.chem-sel-item.on{background:var(--y4);border-color:var(--y)}
+.chem-sel-item:active{transform:scale(.98)}
+.chem-check{width:18px;height:18px;border:2px solid var(--border);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#0d0d0d;transition:all .2s}
+.chem-sel-item.on .chem-check{background:var(--y);border-color:var(--y)}
+
+/* RESULT */
+.rbox{border:2px solid var(--y);padding:22px;background:var(--bg2);margin-bottom:14px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.rdiv{border:none;border-top:1px solid var(--border2);margin-bottom:18px}
+.rpl{font-size:9px;font-weight:800;color:var(--mu2);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.rpv{font-size:25px;font-weight:300}
+.rpv.y{color:var(--y);font-weight:700}.rpv.b{color:var(--blue)}.rpv.w{color:var(--tx)}.rpv.g{color:var(--green)}
+.rps{font-size:9px;color:var(--mu3);margin-top:3px}
+
+/* COST BOX ACCORDION */
+.cbox{border:1px solid var(--border);background:var(--bg2);margin-bottom:12px;overflow:hidden}
+.cbox-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;transition:background .15s}
+.cbox-hdr:active{background:var(--bg3)}
+.cbox-title{font-size:10px;font-weight:800;color:var(--mu2);letter-spacing:.2em;text-transform:uppercase}
+.cbox-toggle{font-size:16px;color:var(--mu2);transition:transform .2s;line-height:1}
+.cbox-toggle.open{transform:rotate(180deg)}
+.cbox-body{border-top:1px solid var(--border2)}
+.cbox-section{padding:12px 16px;border-bottom:1px solid var(--border2)}
+.cbox-section:last-child{border-bottom:none}
+.cbox-section-title{font-size:9px;font-weight:800;color:var(--mu3);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2)}
+.crow:last-child{border-bottom:none}
+.crl{font-size:11px;color:var(--mu)}
+.crv{font-size:12px;font-weight:600}
+.cdiv{border:none;border-top:1px solid var(--border);margin:8px 0}
+
+/* INFO BARS */
+.ibar{padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--y);font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.5}
+.ibar strong{color:var(--y)}
+.ibar.bl{border-left-color:var(--blue)}.ibar.bl strong{color:var(--blue)}
+.ibar.gr{border-left-color:var(--green)}.ibar.gr strong{color:var(--green)}
+
+/* SHARE BUTTON */
+.share-btn{width:100%;background:var(--bg2);border:2px solid var(--y);color:var(--y);padding:15px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;font-family:inherit;font-weight:900;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s}
+.share-btn:active{background:var(--y4)}
+
+/* HISTORY */
+.hist-item{background:var(--bg2);border:1px solid var(--border);padding:13px 15px;margin-bottom:7px;cursor:pointer;transition:all .15s}
+.hist-item:active{border-color:var(--y)}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.hist-name{font-size:13px;font-weight:700;color:var(--tx)}
+.hist-price{font-size:15px;font-weight:700;color:var(--y)}
+.hist-meta{font-size:10px;color:var(--mu2)}
+.hist-del{background:transparent;border:none;color:var(--mu3);font-size:14px;cursor:pointer;padding:2px 4px}
+.hist-del:active{color:var(--red)}
+
+/* PIN */
+.pin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:40px 20px;gap:24px}
+.pin-logo{font-size:32px;font-weight:900;color:var(--tx);letter-spacing:-1px}
+.pin-logo b{color:var(--y)}
+.pin-sub{font-size:11px;color:var(--mu2);letter-spacing:.1em;text-transform:uppercase}
+.pin-dots{display:flex;gap:14px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
+.pin-dot.filled{background:var(--y);border-color:var(--y)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:240px}
+.pin-key{background:var(--bg2);border:1px solid var(--border);color:var(--tx);font-size:20px;font-weight:600;padding:18px;cursor:pointer;font-family:inherit;transition:all .12s;border-radius:50%}
+.pin-key:active{background:var(--y);color:#0d0d0d;transform:scale(.93)}
+.pin-err{color:var(--red);font-size:11px;font-weight:700;letter-spacing:.1em;min-height:16px;text-transform:uppercase}
+.pin-change{background:transparent;border:none;color:var(--mu2);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;margin-top:8px}
+
+/* DOT accent */
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:6px;vertical-align:middle}
+
+/* NOTE INPUT */
+.note-inp{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:11px 13px;font-family:inherit;font-size:13px;outline:none;width:100%;resize:none;height:80px;line-height:1.4}
+.note-inp:focus{border-color:var(--y)}
+
+/* NAV TABS */
+.nav{display:flex;border-top:1px solid var(--border);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg);z-index:20}
+.nav-tab{flex:1;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:transparent;font-family:inherit;color:var(--mu2);transition:color .15s}
+.nav-tab.act{color:var(--y)}
+.nav-icon{font-size:18px;line-height:1}
+.nav-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+
+/* QUOTE PREVIEW (for share) */
+#quote-canvas{position:fixed;top:-9999px;left:-9999px;width:800px}
+</style>
+</head>
+<body>
+<div id="pin-screen"></div>
+<div id="app" style="display:none">
+  <div class="hdr">
+    <div>
+      <div class="hdr-row">
+        <div class="logo-wm">PLAGA<b>W</b>AY</div>
+        <div class="logo-pill">Pro</div>
+      </div>
+      <div class="hdr-sub">Hermosillo, Son. · COFEPRIS · Uso interno</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-sm" id="btnr" style="display:none" onclick="resetQuote()">← Nueva</button>
+      <button class="btn-sm" onclick="showPinChange()">🔒</button>
+    </div>
+  </div>
+  <div class="prog">
+    <div class="ps"><div class="pb" id="pb1"></div><div class="pl" id="pl1">Lugar</div></div>
+    <div class="ps"><div class="pb" id="pb2"></div><div class="pl" id="pl2">Plaga</div></div>
+    <div class="ps"><div class="pb" id="pb3"></div><div class="pl" id="pl3">Paquete</div></div>
+    <div class="ps"><div class="pb" id="pb4"></div><div class="pl" id="pl4">Detalles</div></div>
+    <div class="ps"><div class="pb" id="pb5"></div><div class="pl" id="pl5">Precio</div></div>
+  </div>
+  <div class="cnt fade" id="cnt"></div>
+  <div class="nav" id="nav">
+    <button class="nav-tab act" id="nt0" onclick="switchTab(0)"><div class="nav-icon">🧮</div><div class="nav-lbl">Cotizar</div></button>
+    <button class="nav-tab" id="nt1" onclick="switchTab(1)"><div class="nav-icon">📋</div><div class="nav-lbl">Historial</div></button>
+    <button class="nav-tab" id="nt2" onclick="switchTab(2)"><div class="nav-icon">⚗️</div><div class="nav-lbl">Químicos</div></button>
+  </div>
+</div>
+
+<script>
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+const store = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+};
+
+// ─── PIN ──────────────────────────────────────────────────────────────────────
+let pinBuffer = '';
+const DEFAULT_PIN = '1234';
+
+function getPin() { return store.get('pw_pin') || DEFAULT_PIN; }
+function setPin(p) { store.set('pw_pin', p); }
+function isPinSet() { return !!store.get('pw_pin'); }
+
+function renderPin(mode = 'unlock', onSuccess = null) {
+  const ps = document.getElementById('pin-screen');
+  let buf = '';
+  let step = 0; // 0=enter, 1=confirm (for change)
+  let firstPin = '';
+
+  const titles = {
+    unlock: ['Ingresa tu PIN', ''],
+    change: ['PIN nuevo', 'Confirmar PIN'],
+    set: ['Crear PIN', 'Confirmar PIN'],
+  };
+
+  function draw(err = '') {
+    ps.innerHTML = `
+      <div class="pin-wrap">
+        <div class="pin-logo">PLAGA<b>W</b>AY</div>
+        <div class="pin-sub">${mode === 'unlock' ? 'Cotizador Interno' : (step === 0 ? titles[mode][0] : titles[mode][1])}</div>
+        <div class="pin-dots">
+          ${[0,1,2,3].map(i => `<div class="pin-dot ${buf.length > i ? 'filled' : ''}"></div>`).join('')}
+        </div>
+        <div class="pin-err">${err}</div>
+        <div class="pin-pad">
+          ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k => `
+            <button class="pin-key" onclick="pinKey('${k}')" ${k===''?'style="visibility:hidden"':''}>${k}</button>
+          `).join('')}
+        </div>
+        ${mode !== 'unlock' ? `<button class="pin-change" onclick="cancelPinChange()">Cancelar</button>` : ''}
+      </div>`;
+    window.pinKey = function(k) {
+      if (k === '⌫') { buf = buf.slice(0, -1); draw(); return; }
+      if (buf.length >= 4) return;
+      buf += k;
+      draw();
+      if (buf.length === 4) setTimeout(() => checkPin(buf), 120);
+    };
+  }
+
+  function checkPin(entered) {
+    if (mode === 'unlock') {
+      if (entered === getPin()) {
+        ps.style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        document.getElementById('app').style.flexDirection = 'column';
+        if (onSuccess) onSuccess();
+        render();
+      } else {
+        buf = ''; draw('PIN incorrecto');
+      }
+    } else {
+      if (step === 0) {
+        firstPin = entered; buf = ''; step = 1; draw();
+      } else {
+        if (entered === firstPin) {
+          setPin(entered);
+          buf = ''; cancelPinChange();
+          showToast('PIN actualizado ✓');
+        } else {
+          buf = ''; step = 0; firstPin = ''; draw('No coinciden, intenta de nuevo');
+        }
+      }
+    }
+  }
+
+  draw();
+}
+
+function showPinChange() {
+  const ps = document.getElementById('pin-screen');
+  ps.style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  renderPin('change');
+}
+
+window.cancelPinChange = function() {
+  document.getElementById('pin-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+};
+
+// ─── CHEMICALS ────────────────────────────────────────────────────────────────
+function getChems() {
+  return store.get('pw_chems') || [
+    { id: 'cynoff', name: 'Cynoff 40', price: 16.25, color: '#f5c800' },
+    { id: 'demand', name: 'Demand Duo', price: 21.73, color: '#4ac8f0' },
+  ];
+}
+function saveChems(c) { store.set('pw_chems', c); }
+
+// ─── HISTORY ─────────────────────────────────────────────────────────────────
+function getHistory() { return store.get('pw_hist') || []; }
+function saveHistory(h) { store.set('pw_hist', h); }
+function addHistory(entry) {
+  const h = getHistory();
+  h.unshift({ ...entry, id: Date.now(), date: new Date().toLocaleDateString('es-MX') });
+  if (h.length > 50) h.pop();
+  saveHistory(h);
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const FIJOS = 167, GAS = 123, CONS = 6.25;
+
+const PLAGAS = {
+  comun:     { label: 'Plaga Común',          sub: 'Hormigas, cucarachas, arácnidos', color: '#f5c800', litros: .075, lineal: .03, b: false },
+  voladores: { label: 'Insectos Voladores',   sub: 'Moscas, mosquitos, zancudos',     color: '#4ac8f0', litros: .06,  lineal: .02, b: false },
+  especial:  { label: 'Plaga Especial',       sub: 'Chinches, termita, roedores',     color: '#ff4444', litros: .10,  lineal: .04, b: true,  tag: true },
+  alacran:   { label: 'Alacrán (correctivo)', sub: 'Presencia activa confirmada',     color: '#ff8844', litros: .12,  lineal: .05, b: true,  tag: true },
+};
+
+const LUGARES = [
+  { id: 'hogar_chico',  label: 'Hogar chico',      sub: '~180 m²',              m2: 180,  mult: 1.0  },
+  { id: 'hogar_grande', label: 'Hogar grande',      sub: '+250 m²',              m2: 280,  mult: 1.05 },
+  { id: 'restaurante',  label: 'Restaurante',       sub: 'Food service / COFEPRIS', m2: 150, mult: 1.2 },
+  { id: 'oficina',      label: 'Oficinas',          sub: 'Corporativo',          m2: 200,  mult: 1.0  },
+  { id: 'bodega',       label: 'Bodega / Almacén',  sub: 'Industrial',           m2: 500,  mult: 1.15 },
+  { id: 'hotel',        label: 'Hotel',             sub: 'Hospedaje',            m2: 400,  mult: 1.25 },
+  { id: 'evento',       label: 'Evento / Festival', sub: 'Expogan, palenques',   m2: 1000, mult: 1.35, lineal: true },
+  { id: 'planta',       label: 'Planta Industrial', sub: 'Manufactura',          m2: 800,  mult: 1.3  },
+  { id: 'otro',         label: 'Otro',              sub: 'Captura manual',       m2: 0,    mult: 1.0  },
+];
+
+const PAQUETES = [
+  {
+    id: 'basico', label: 'Protección Básica', tag: null,
+    sub: 'Una aplicación · Garantía 48h',
+    includes: ['Aplicación interior y exterior', 'Control de plagas básicas', 'Reporte digital básico'],
+    mult: 0.72, margenMult: 0.85,
+    desc: 'Existe para que el Paquete B parezca irresistible.',
+    color: '#555550',
+  },
+  {
+    id: 'completo', label: 'Escudo Permanente', tag: 'MÁS VENDIDO',
+    sub: 'Primer servicio + refuerzo 21 días · Garantía 90 días',
+    includes: ['Todo del Básico', 'Visita de refuerzo a los 21 días', 'Protección total incl. garrapatas', 'Cert. COESPRISSON profesional', 'Prioridad en agenda (24h)'],
+    mult: 1.0, margenMult: 1.0,
+    desc: '70% de clientes eligen este. Tu mayor rentabilidad.',
+    color: '#f5c800',
+  },
+  {
+    id: 'premium', label: 'Blindaje Total', tag: 'PREMIUM',
+    sub: 'Visitas mensuales · Atención 24/7 · Carpeta técnica',
+    includes: ['Todo del Escudo', 'Visitas mensuales programadas', 'Control roedores + moscas', 'Carpeta de seguridad sanitaria', 'Emergencias ilimitadas 24/7', 'Barrera perimetral exterior'],
+    mult: 2.6, margenMult: 1.15,
+    desc: 'Para restaurantes, industrias y residencias premium.',
+    color: '#4ac8f0',
+  },
+];
+
+const FREQS = [
+  { id: 'unica',   label: 'Única vez',       desc: 0,    g: 'Garantía 48 horas' },
+  { id: 'men3',    label: 'Póliza 3 meses',  desc: .03,  g: 'Revisita sin costo' },
+  { id: 'men6',    label: 'Póliza 6 meses',  desc: .05,  g: 'Revisita sin costo' },
+  { id: 'men12',   label: 'Póliza 12 meses', desc: .09,  g: 'Revisita + prioridad' },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let S = initState();
+let tab = 0;
+
+function initState() {
+  return {
+    step: 1, lugar: null, m2: '', linealM: '',
+    useLineal: false, plaga: null, paquete: null,
+    selectedChems: [], freq: 'unica',
+    foraneo: false, cert: false, hormiga: false,
+    trampaMosca: false, trampaMoscaQty: 1,
+    cebaderoRoedor: false, cebaderoQty: 1,
+    infestacion: 'normal', horario: 'normal',
+    margen: 38, result: null,
+    clientName: '', clientAddr: '', notes: '',
+  };
+}
+
+// ─── FORMAT ───────────────────────────────────────────────────────────────────
+const fmt = n => '$' + Math.round(n).toLocaleString('es-MX');
+
+// ─── CALC ─────────────────────────────────────────────────────────────────────
+function calc() {
+  const chems = getChems();
+  const p = PLAGAS[S.plaga];
+  const l = S.lugar;
+  const f = FREQS.find(x => x.id === S.freq);
+  const pk = PAQUETES.find(x => x.id === S.paquete);
+  const selChems = S.selectedChems.map(id => chems.find(c => c.id === id)).filter(Boolean);
+
+  // Area / volume
+  let area = 0, lineal = 0;
+  if (S.useLineal && S.linealM) {
+    lineal = parseFloat(S.linealM);
+    // Estimate m2 equivalent for fixed costs: perimeter * 3m strip
+    area = lineal * 3;
+  } else {
+    area = parseFloat(S.m2) || 0;
+  }
+
+  // Chemical cost - distribute among selected chems
+  let costoQuimicos = 0;
+  if (selChems.length > 0) {
+    const litrosTotales = S.useLineal ? lineal * p.lineal : area * p.litros;
+    const litrosPorChem = litrosTotales / selChems.length;
+    selChems.forEach(c => { costoQuimicos += litrosPorChem * c.price; });
+    if (p.b && selChems.length === 1) {
+      // Add secondary product cost if only one selected but plaga needs B
+      costoQuimicos *= 1.4;
+    }
+  } else {
+    // fallback: default costs
+    const litros = S.useLineal ? lineal * p.lineal : area * p.litros;
+    costoQuimicos = litros * 16.25;
+    if (p.b) costoQuimicos += litros * 0.4 * 21.73;
+  }
+
+  // Extras
+  let extras = 0;
+  if (S.hormiga) extras += 50;
+  if (S.trampaMosca) extras += S.trampaMoscaQty * 280; // trampa $280 c/u
+  if (S.cebaderoRoedor) extras += S.cebaderoQty * 180; // cebo $180 c/u
+
+  const costoOp = CONS + GAS + (S.foraneo ? 200 : 0);
+  const certCosto = S.cert ? 450 : 0;
+  const costoBase = costoQuimicos + extras + costoOp + FIJOS;
+
+  // Package multiplier
+  const pkMult = pk ? pk.mult : 1.0;
+  const denom = 1 - (S.margen / 100) - 0.10;
+  let precioBase = (costoBase / denom) * l.mult * pkMult;
+  precioBase += certCosto;
+
+  // Modifiers
+  let modLabel = [];
+  let modMult = 1.0;
+  if (S.infestacion === 'alta') { modMult *= 1.25; modLabel.push('+25% infestación'); }
+  if (S.horario === 'nocturno') { modMult *= 1.20; modLabel.push('+20% horario especial'); }
+
+  const precioMod = precioBase * modMult;
+  const pDesc = precioMod * (1 - f.desc);
+  const pIVA = pDesc * 1.16;
+  const pIntro = pDesc * 0.95;
+  const pIntroIVA = pIntro * 1.16;
+  const mano = pDesc * 0.10;
+  const util = pDesc * (S.margen / 100);
+
+  const litrosTotales = S.useLineal
+    ? (lineal * p.lineal).toFixed(1)
+    : (area * p.litros).toFixed(1);
+
+  return {
+    costoQuimicos, extras, costoOp, costoFijos: FIJOS, certCosto,
+    mano, util,
+    pDesc, pIVA, pIntro, pIntroIVA,
+    litrosTotales,
+    area: area.toFixed(0),
+    lineal: lineal.toFixed(0),
+    g: f.garantia || f.g,
+    desc: f.desc * 100,
+    modLabel,
+    paquete: pk?.label || '',
+    selChems,
+  };
+}
+
+// ─── TAB SWITCH ───────────────────────────────────────────────────────────────
+function switchTab(t) {
+  tab = t;
+  [0,1,2].forEach(i => document.getElementById('nt'+i).className = 'nav-tab' + (i===t?' act':''));
+  const c = document.getElementById('cnt');
+  c.className = 'cnt fade';
+  void c.offsetWidth;
+  if (t === 0) {
+    document.getElementById('prog').style.display = 'flex';
+    document.getElementById('btnr').style.display = S.step > 1 ? '' : 'none';
+    render();
+  } else if (t === 1) {
+    document.getElementById('pb1').parentElement.parentElement.style.display = 'none';
+    document.getElementById('btnr').style.display = 'none';
+    renderHistory(c);
+  } else {
+    document.getElementById('pb1').parentElement.parentElement.style.display = 'none';
+    document.getElementById('btnr').style.display = 'none';
+    renderChemicals(c);
+  }
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+function upProg() {
+  const prog = document.querySelector('.prog');
+  if (prog) prog.style.display = tab === 0 ? 'flex' : 'none';
+  [1,2,3,4,5].forEach(i => {
+    const b = document.getElementById('pb'+i);
+    const l = document.getElementById('pl'+i);
+    if (!b) return;
+    b.className = 'pb' + (S.step > i ? ' done' : S.step === i ? ' act' : '');
+    l.className = 'pl' + (S.step > i ? ' done' : S.step === i ? ' act' : '');
+  });
+}
+
+// ─── RENDER MAIN ─────────────────────────────────────────────────────────────
+function render() {
+  upProg();
+  document.getElementById('btnr').style.display = S.step > 1 ? '' : 'none';
+  const c = document.getElementById('cnt');
+  c.className = 'cnt fade';
+  void c.offsetWidth;
+  if (S.step === 1) s1(c);
+  else if (S.step === 2) s2(c);
+  else if (S.step === 3) s3(c);
+  else if (S.step === 4) s4(c);
+  else s5(c);
+}
+
+// ─── STEP 1: Lugar ────────────────────────────────────────────────────────────
+function s1(c) {
+  c.innerHTML = `
+    <div class="st"><span class="st-n">01</span><span class="st-h">¿Dónde es el servicio?</span></div>
+    <div class="blk">
+      <span class="lbl">Datos del cliente (opcional)</span>
+      <input class="inp-text" placeholder="Nombre del cliente" value="${S.clientName}"
+        oninput="S.clientName=this.value" style="margin-bottom:7px">
+      <input class="inp-text" placeholder="Dirección / referencia" value="${S.clientAddr}"
+        oninput="S.clientAddr=this.value">
+    </div>
+    <span class="lbl">Tipo de lugar</span>
+    <div class="g2">
+      ${LUGARES.map(l => `
+        <button class="card" onclick="selLugar('${l.id}')">
+          <div class="ct">${l.label}</div>
+          <div class="cs">${l.sub}</div>
+          ${l.m2 ? `<div class="ch">${l.m2} m² sugerido</div>` : ''}
+          ${l.lineal ? `<div class="ch" style="color:var(--blue)">⬡ Acepta metros lineales</div>` : ''}
+        </button>`).join('')}
+    </div>`;
+}
+
+function selLugar(id) {
+  S.lugar = LUGARES.find(l => l.id === id);
+  if (S.lugar.m2) S.m2 = String(S.lugar.m2);
+  S.useLineal = !!S.lugar.lineal;
+  S.step = 2; render();
+}
+
+// ─── STEP 2: Plaga + área ────────────────────────────────────────────────────
+function s2(c) {
+  const l = S.lugar;
+  const canLineal = !!l.lineal;
+  c.innerHTML = `
+    <div class="st"><span class="st-n">02</span><span class="st-h">Plaga y área</span></div>
+
+    <div class="blk">
+      ${canLineal ? `
+        <div class="g2" style="margin-bottom:12px">
+          <button class="card ${!S.useLineal?'on':''}" onclick="S.useLineal=false;render()">
+            <div class="ct">Metros cuadrados</div><div class="cs">Área total</div>
+          </button>
+          <button class="card ${S.useLineal?'on':''}" onclick="S.useLineal=true;render()">
+            <div class="ct">Metros lineales</div><div class="cs">Solo perímetro</div>
+          </button>
+        </div>` : ''}
+
+      <span class="lbl">${S.useLineal ? 'Metros lineales de perímetro' : 'Metros cuadrados'}</span>
+      <div class="irow">
+        <input class="im2" type="number" id="m2i"
+          value="${S.useLineal ? S.linealM : S.m2}"
+          oninput="${S.useLineal ? 'S.linealM=this.value' : 'S.m2=this.value'}"
+          inputmode="numeric">
+        <span class="iu">${S.useLineal ? 'ml' : 'm²'}</span>
+        ${l.m2 && !S.useLineal ? `<button class="bsug" onclick="document.getElementById('m2i').value=S.m2='${l.m2}'">Sugerido (${l.m2})</button>` : ''}
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Tipo de plaga</span>
+      <div class="g1">
+        ${Object.entries(PLAGAS).map(([id, p]) => `
+          <button class="card ${S.plaga===id?'on':''}" onclick="selPlaga('${id}')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="ct"><span class="dot" style="background:${p.color}"></span>${p.label}</div>
+                <div class="cs" style="margin-top:3px">${p.sub}</div>
+              </div>
+              ${p.tag ? `<span class="ctag">Diferenciado</span>` : ''}
+            </div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function selPlaga(id) {
+  const val = S.useLineal ? S.linealM : S.m2;
+  if (!val || parseFloat(val) <= 0) {
+    const el = document.getElementById('m2i');
+    el.focus(); el.style.borderColor = '#ff4444';
+    setTimeout(() => el.style.borderColor = '', 1500);
+    return;
+  }
+  S.plaga = id; S.step = 3; render();
+}
+
+// ─── STEP 3: Paquete ─────────────────────────────────────────────────────────
+function s3(c) {
+  c.innerHTML = `
+    <div class="st"><span class="st-n">03</span><span class="st-h">Elige el paquete</span></div>
+    <div class="g1">
+      ${PAQUETES.map(pk => `
+        <button class="card ${S.paquete===pk.id?'on':''}" onclick="selPaquete('${pk.id}')">
+          ${pk.tag ? `<div style="margin-bottom:6px"><span class="badge-best" style="background:${pk.color};color:${pk.id==='completo'?'#0d0d0d':'#0d0d0d'}">${pk.tag}</span></div>` : '<div style="height:18px"></div>'}
+          <div class="ct" style="color:${pk.id===S.paquete?pk.color:'inherit'}">${pk.label}</div>
+          <div class="cs" style="margin-top:3px">${pk.sub}</div>
+          <div style="margin-top:10px;display:grid;gap:3px">
+            ${pk.includes.map(i => `<div style="font-size:10px;color:var(--mu2)">✓ ${i}</div>`).join('')}
+          </div>
+          <div style="margin-top:8px;font-size:9px;color:var(--mu3);font-style:italic">${pk.desc}</div>
+        </button>`).join('')}
+    </div>`;
+}
+
+function selPaquete(id) { S.paquete = id; S.step = 4; render(); }
+
+// ─── STEP 4: Detalles ────────────────────────────────────────────────────────
+function s4(c) {
+  const chems = getChems();
+  c.innerHTML = `
+    <div class="st"><span class="st-n">04</span><span class="st-h">Detalles del servicio</span></div>
+
+    <div class="blk">
+      <span class="lbl">Químicos a utilizar</span>
+      <div class="g1" style="margin-top:10px">
+        ${chems.map(ch => `
+          <div class="chem-sel-item ${S.selectedChems.includes(ch.id)?'on':''}" onclick="toggleChem('${ch.id}')">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--tx)">${ch.name}</div>
+              <div style="font-size:10px;color:var(--mu2)">$${ch.price}/L</div>
+            </div>
+            <div class="chem-check">${S.selectedChems.includes(ch.id)?'✓':''}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--mu3);margin-top:6px">Si no seleccionas ninguno se usan los costos base.</div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Condición de la plaga</span>
+      <div class="g2" style="margin-top:10px">
+        <button class="card ${S.infestacion==='normal'?'on':''}" onclick="S.infestacion='normal';render()">
+          <div class="ct">Normal</div><div class="cs">Infestación estándar</div>
+        </button>
+        <button class="card ${S.infestacion==='alta'?'on':''}" onclick="S.infestacion='alta';render()">
+          <div class="ct" style="color:var(--red)">Severa</div>
+          <div class="cs">+25% costo</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Horario del servicio</span>
+      <div class="g2" style="margin-top:10px">
+        <button class="card ${S.horario==='normal'?'on':''}" onclick="S.horario='normal';render()">
+          <div class="ct">Diurno / L-S</div><div class="cs">Horario estándar</div>
+        </button>
+        <button class="card ${S.horario==='nocturno'?'on':''}" onclick="S.horario='nocturno';render()">
+          <div class="ct" style="color:var(--orange)">Nocturno / Dom.</div>
+          <div class="cs">+20% costo</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Extras</span>
+      <div class="g1" style="margin-top:10px">
+        <div class="trow ${S.foraneo?'on':''}" onclick="S.foraneo=!S.foraneo;render()">
+          <div><div class="tlbl">Zona foránea</div><div class="tsub">+$200 traslado extendido</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        <div class="trow ${S.cert?'on':''}" onclick="S.cert=!S.cert;render()">
+          <div><div class="tlbl">Certificado COESPRISSON</div><div class="tsub">+$450 · Documento oficial firmado</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        <div class="trow ${S.hormiga?'on':''}" onclick="S.hormiga=!S.hormiga;render()">
+          <div><div class="tlbl">Tratamiento hormigueros</div><div class="tsub">+$50 · Producto específico</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+
+        <div class="trow ${S.trampaMosca?'on':''}" onclick="S.trampaMosca=!S.trampaMosca;render()">
+          <div><div class="tlbl">Trampas para moscas</div><div class="tsub">$280 c/u · Instalación incluida</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        ${S.trampaMosca ? `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--y4);border:1px solid var(--y);border-top:none">
+          <span style="font-size:12px;color:var(--mu)">Cantidad:</span>
+          <button onclick="if(S.trampaMoscaQty>1){S.trampaMoscaQty--;render()}" style="background:var(--border);border:none;color:var(--tx);width:30px;height:30px;font-size:16px;cursor:pointer;font-weight:700">−</button>
+          <span style="font-size:16px;font-weight:700;color:var(--y);min-width:24px;text-align:center">${S.trampaMoscaQty}</span>
+          <button onclick="S.trampaMoscaQty++;render()" style="background:var(--border);border:none;color:var(--tx);width:30px;height:30px;font-size:16px;cursor:pointer;font-weight:700">+</button>
+          <span style="font-size:11px;color:var(--mu2)">${fmt(S.trampaMoscaQty*280)}</span>
+        </div>` : ''}
+
+        <div class="trow ${S.cebaderoRoedor?'on':''}" onclick="S.cebaderoRoedor=!S.cebaderoRoedor;render()">
+          <div><div class="tlbl">Cebaderos para roedores</div><div class="tsub">$180 c/u · Cebo incluido</div></div>
+          <div class="tsw"><div class="tkn"></div></div>
+        </div>
+        ${S.cebaderoRoedor ? `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--y4);border:1px solid var(--y);border-top:none">
+          <span style="font-size:12px;color:var(--mu)">Cantidad:</span>
+          <button onclick="if(S.cebaderoQty>1){S.cebaderoQty--;render()}" style="background:var(--border);border:none;color:var(--tx);width:30px;height:30px;font-size:16px;cursor:pointer;font-weight:700">−</button>
+          <span style="font-size:16px;font-weight:700;color:var(--y);min-width:24px;text-align:center">${S.cebaderoQty}</span>
+          <button onclick="S.cebaderoQty++;render()" style="background:var(--border);border:none;color:var(--tx);width:30px;height:30px;font-size:16px;cursor:pointer;font-weight:700">+</button>
+          <span style="font-size:11px;color:var(--mu2)">${fmt(S.cebaderoQty*180)}</span>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Frecuencia / contrato</span>
+      <div class="g2" style="margin-top:10px">
+        ${FREQS.map(f => `
+          <button class="card ${S.freq===f.id?'on':''}" onclick="S.freq='${f.id}';render()">
+            <div class="ct">${f.label}</div>
+            ${f.desc ? `<div class="cs" style="color:var(--green)">−${f.desc*100}% dcto.</div>` : ''}
+            <div class="cs">${f.g}</div>
+          </button>`).join('')}
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Margen objetivo: <span style="color:var(--y)" id="mv">${S.margen}%</span></span>
+      <p style="font-size:10px;color:var(--mu2);margin:4px 0 12px">+10% mano de obra socios · Total retenido: ${S.margen+10}%</p>
+      <input type="range" min="20" max="55" value="${S.margen}"
+        oninput="S.margen=parseInt(this.value);document.getElementById('mv').textContent=S.margen+'%'">
+      <div class="rlbls"><span>20% conservador</span><span>55% ambicioso</span></div>
+    </div>
+
+    <div class="blk">
+      <span class="lbl">Notas internas</span>
+      <textarea class="note-inp" placeholder="Ej: cliente tiene perros, entrada por calle lateral, código de acceso..."
+        oninput="S.notes=this.value">${S.notes}</textarea>
+    </div>
+
+    <button class="cta" onclick="doCalc()">Calcular precio →</button>`;
+}
+
+function toggleChem(id) {
+  const idx = S.selectedChems.indexOf(id);
+  if (idx >= 0) S.selectedChems.splice(idx, 1);
+  else S.selectedChems.push(id);
+  render();
+}
+
+function doCalc() { S.result = calc(); S.step = 5; render(); }
+
+// ─── STEP 5: Resultado ────────────────────────────────────────────────────────
+function s5(c) {
+  const r = S.result;
+  const ev = S.lugar?.id === 'evento';
+  const pk = PAQUETES.find(x => x.id === S.paquete);
+
+  c.innerHTML = `
+    <div class="st"><span class="st-n">05</span><span class="st-h">Cotización</span></div>
+
+    ${S.clientName ? `<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--mu2);margin-bottom:2px">CLIENTE</div>
+      <div style="font-size:15px;font-weight:700;color:var(--tx)">${S.clientName}</div>
+      ${S.clientAddr ? `<div style="font-size:11px;color:var(--mu2);margin-top:2px">${S.clientAddr}</div>` : ''}
+    </div>` : ''}
+
+    ${pk ? `<div style="margin-bottom:14px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:var(--mu2)">Paquete:</span>
+      <span style="font-size:13px;font-weight:700;color:${pk.color}">${pk.label}</span>
+      ${r.modLabel.length ? r.modLabel.map(m => `<span style="font-size:9px;color:var(--orange);font-weight:800;background:#1a0e00;padding:2px 6px">${m}</span>`).join('') : ''}
+    </div>` : ''}
+
+    <div class="rbox">
+      <div class="rgrid">
+        <div>
+          <div class="rpl">Precio sugerido</div>
+          <div class="rpv y">${fmt(r.pDesc)}</div>
+          <div class="rps">sin IVA</div>
+        </div>
+        <div>
+          <div class="rpl">Con IVA (16%)</div>
+          <div class="rpv w">${fmt(r.pIVA)}</div>
+          <div class="rps">precio final cliente</div>
+        </div>
+      </div>
+      <hr class="rdiv">
+      <div class="rgrid">
+        <div>
+          <div class="rpl">Precio intro (−5%)</div>
+          <div class="rpv b">${fmt(r.pIntro)}</div>
+          <div class="rps">sin IVA · para cerrar</div>
+        </div>
+        <div>
+          <div class="rpl">Intro con IVA</div>
+          <div class="rpv w">${fmt(r.pIntroIVA)}</div>
+          <div class="rps">precio intro cliente</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COST ACCORDION -->
+    <div class="cbox">
+      <div class="cbox-hdr" onclick="toggleAccordion('acc-main')">
+        <span class="cbox-title">Desglose de costos</span>
+        <span class="cbox-toggle" id="acc-main-icon">▼</span>
+      </div>
+      <div class="cbox-body" id="acc-main" style="display:none">
+
+        <div class="cbox-section">
+          <div class="cbox-section-title">▸ Insumos químicos</div>
+          ${r.selChems.length > 0
+            ? r.selChems.map(c => `<div class="crow"><span class="crl">${c.name}</span><span class="crv" style="color:var(--mu)">${fmt(r.costoQuimicos / r.selChems.length)}</span></div>`).join('')
+            : `<div class="crow"><span class="crl">Químicos (costos base)</span><span class="crv" style="color:var(--mu)">${fmt(r.costoQuimicos)}</span></div>`}
+          ${S.hormiga ? `<div class="crow"><span class="crl">Tratamiento hormigueros</span><span class="crv" style="color:var(--mu)">$50</span></div>` : ''}
+          ${S.trampaMosca ? `<div class="crow"><span class="crl">Trampas moscas ×${S.trampaMoscaQty}</span><span class="crv" style="color:var(--mu)">${fmt(S.trampaMoscaQty*280)}</span></div>` : ''}
+          ${S.cebaderoRoedor ? `<div class="crow"><span class="crl">Cebaderos roedores ×${S.cebaderoQty}</span><span class="crv" style="color:var(--mu)">${fmt(S.cebaderoQty*180)}</span></div>` : ''}
+        </div>
+
+        <div class="cbox-section">
+          <div class="cbox-section-title">▸ Operativo</div>
+          <div class="crow"><span class="crl">Gasolina</span><span class="crv" style="color:var(--mu)">$123</span></div>
+          <div class="crow"><span class="crl">Consumibles técnicos</span><span class="crv" style="color:var(--mu)">$6</span></div>
+          ${S.foraneo ? `<div class="crow"><span class="crl">Traslado foráneo</span><span class="crv" style="color:var(--mu)">$200</span></div>` : ''}
+          ${S.cert ? `<div class="crow"><span class="crl">Certificado COESPRISSON</span><span class="crv" style="color:var(--mu)">$450</span></div>` : ''}
+        </div>
+
+        <div class="cbox-section">
+          <div class="cbox-section-title">▸ Fijos prorrateados</div>
+          <div class="crow"><span class="crl">Renta y gastos fijos (÷30)</span><span class="crv" style="color:var(--mu)">${fmt(r.costoFijos)}</span></div>
+        </div>
+
+        <div class="cbox-section">
+          <div class="cbox-section-title">▸ Distribución del precio</div>
+          <div class="crow"><span class="crl">Mano de obra socios (10%)</span><span class="crv" style="color:var(--y)">${fmt(r.mano)}</span></div>
+          <div class="crow"><span class="crl">Utilidad empresa (${S.margen}%)</span><span class="crv" style="color:var(--green)">${fmt(r.util)}</span></div>
+          ${r.modLabel.length ? `<div class="crow"><span class="crl">Modificadores</span><span class="crv" style="color:var(--orange)">${r.modLabel.join(', ')}</span></div>` : ''}
+          ${r.desc > 0 ? `<div class="crow"><span class="crl">Descuento por póliza</span><span class="crv" style="color:var(--green)">−${r.desc}%</span></div>` : ''}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ibar">
+      <strong>Garantía:</strong> ${r.g}
+      ${r.desc > 0 ? `&nbsp;·&nbsp;<span style="color:var(--green)">Descuento ${r.desc}% aplicado</span>` : ''}
+    </div>
+
+    ${S.notes ? `<div class="ibar" style="border-left-color:var(--mu2)"><strong style="color:var(--mu)">Notas:</strong> ${S.notes}</div>` : ''}
+
+    ${ev ? `<div class="ibar bl"><strong>Ref. Expogan 2024:</strong> Competencia cobró $6,600 + IVA. Tu intro (${fmt(r.pIntro)} + IVA) es ${r.pIntro < 6600 ? 'competitivo, deja margen para negociar.' : 'similar al mercado — justifica con certificado.'}</div>` : ''}
+
+    <button class="share-btn" onclick="shareQuote()">
+      <span style="font-size:18px">📤</span> Compartir cotización
+    </button>
+    <button class="cta" onclick="saveAndReset()">✓ Guardar y nueva cotización</button>
+    <button class="cta sec" onclick="resetQuote()">← Cancelar sin guardar</button>`;
+}
+
+// ─── ACCORDION ────────────────────────────────────────────────────────────────
+window.toggleAccordion = function(id) {
+  const body = document.getElementById(id);
+  const icon = document.getElementById(id + '-icon');
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (icon) { icon.className = 'cbox-toggle' + (open ? '' : ' open'); }
+};
+
+// ─── SHARE ────────────────────────────────────────────────────────────────────
+function shareQuote() {
+  const r = S.result;
+  const pk = PAQUETES.find(x => x.id === S.paquete);
+  const fecha = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+
+  const text = `
+*PLAGAWAY* · Control total, plagas fuera 🦟
+_Hermosillo, Son. · COFEPRIS · COESPRISSON_
+━━━━━━━━━━━━━━━━━━━
+
+📋 *COTIZACIÓN PROFESIONAL*
+Fecha: ${fecha}
+${S.clientName ? `Cliente: ${S.clientName}` : ''}
+${S.clientAddr ? `Lugar: ${S.clientAddr}` : ''}
+
+📦 Paquete: *${pk?.label || ''}*
+🐛 Plaga: ${PLAGAS[S.plaga]?.label || ''}
+📐 Área: ${S.useLineal ? S.linealM + ' ml' : S.m2 + ' m²'}
+${S.lugar ? `📍 Tipo: ${S.lugar.label}` : ''}
+
+━━━━━━━━━━━━━━━━━━━
+💰 *PRECIOS*
+
+Precio estándar: *${fmt(r.pDesc)}* (sin IVA)
+Con IVA (16%): *${fmt(r.pIVA)}*
+
+Precio de lanzamiento: *${fmt(r.pIntro)}* (sin IVA)
+Con IVA: *${fmt(r.pIntroIVA)}*
+
+━━━━━━━━━━━━━━━━━━━
+✅ *INCLUYE*
+${pk?.includes.map(i => `• ${i}`).join('\n') || ''}
+${S.cert ? '• Certificado COESPRISSON oficial' : ''}
+${S.trampaMosca ? `• Trampas para moscas ×${S.trampaMoscaQty}` : ''}
+${S.cebaderoRoedor ? `• Cebaderos para roedores ×${S.cebaderoQty}` : ''}
+
+🛡️ Garantía: ${r.g}
+${r.desc > 0 ? `🎁 Descuento póliza: ${r.desc}%` : ''}
+
+━━━━━━━━━━━━━━━━━━━
+_Licencia sanitaria COFEPRIS_
+_Protocolos validados ante COESPRISSON_
+_"Control total, plagas fuera"_
+  `.trim();
+
+  if (navigator.share) {
+    navigator.share({ text }).catch(() => copyToClipboard(text));
+  } else {
+    copyToClipboard(text);
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Cotización copiada ✓')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Cotización copiada ✓');
+  });
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--y);color:#0d0d0d;padding:10px 20px;font-weight:900;font-size:12px;letter-spacing:.1em;z-index:999;animation:fu .2s ease';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+// ─── SAVE & RESET ─────────────────────────────────────────────────────────────
+function saveAndReset() {
+  const r = S.result;
+  const pk = PAQUETES.find(x => x.id === S.paquete);
+  addHistory({
+    clientName: S.clientName || 'Sin nombre',
+    clientAddr: S.clientAddr,
+    lugar: S.lugar?.label,
+    plaga: PLAGAS[S.plaga]?.label,
+    paquete: pk?.label,
+    precio: r.pDesc,
+    precioIVA: r.pIVA,
+    m2: S.useLineal ? S.linealM + 'ml' : S.m2 + 'm²',
+    notes: S.notes,
+  });
+  showToast('Guardado ✓');
+  resetQuote();
+}
+
+function resetQuote() {
+  S = initState();
+  render();
+}
+
+// ─── HISTORY TAB ──────────────────────────────────────────────────────────────
+function renderHistory(c) {
+  const h = getHistory();
+  c.innerHTML = `
+    <div class="st"><span class="st-n">📋</span><span class="st-h">Historial</span></div>
+    ${h.length === 0 ? `<div style="text-align:center;padding:60px 20px;color:var(--mu3)">
+      <div style="font-size:40px;margin-bottom:12px">📋</div>
+      <div style="font-size:13px">Aún no hay cotizaciones guardadas.</div>
+    </div>` : h.map((item, i) => `
+      <div class="hist-item">
+        <div class="hist-top">
+          <div>
+            <div class="hist-name">${item.clientName}</div>
+            <div class="hist-meta">${item.date} · ${item.lugar || ''} · ${item.plaga || ''}</div>
+            ${item.paquete ? `<div style="font-size:10px;color:var(--y);margin-top:2px">${item.paquete}</div>` : ''}
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <div class="hist-price">${fmt(item.precio)}</div>
+            <button class="hist-del" onclick="delHistory(${i})">✕</button>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--mu3);margin-top:4px">${item.m2}${item.clientAddr ? ' · ' + item.clientAddr : ''}${item.notes ? ' · ' + item.notes : ''}</div>
+      </div>`).join('')}
+    ${h.length > 0 ? `<button class="cta sec" onclick="if(confirm('¿Borrar todo el historial?')){saveHistory([]);renderHistory(document.getElementById('cnt'))}">Borrar historial</button>` : ''}`;
+}
+
+window.delHistory = function(i) {
+  const h = getHistory(); h.splice(i, 1); saveHistory(h);
+  renderHistory(document.getElementById('cnt'));
+};
+
+// ─── CHEMICALS TAB ────────────────────────────────────────────────────────────
+function renderChemicals(c) {
+  const chems = getChems();
+  c.innerHTML = `
+    <div class="st"><span class="st-n">⚗️</span><span class="st-h">Químicos</span></div>
+    <div style="margin-bottom:16px">
+      ${chems.map((ch, i) => `
+        <div class="chem-item">
+          <div>
+            <div class="chem-name">${ch.name}</div>
+            <div class="chem-price">$${ch.price}/litro</div>
+          </div>
+          <button class="chem-del" onclick="deleteChem(${i})" title="Eliminar">✕</button>
+        </div>`).join('')}
+    </div>
+    <span class="lbl">Agregar químico</span>
+    <div class="add-chem-row" style="margin-top:10px">
+      <input class="inp-text" id="chNewName" placeholder="Nombre del químico">
+      <input class="inp-num" id="chNewPrice" placeholder="$/L" type="number" step="0.01" inputmode="decimal">
+      <button class="btn-add" onclick="addChem()">+</button>
+    </div>
+    <div style="font-size:10px;color:var(--mu3);margin-top:8px">Los químicos guardados estarán disponibles en todas las cotizaciones.</div>`;
+}
+
+window.addChem = function() {
+  const name = document.getElementById('chNewName').value.trim();
+  const price = parseFloat(document.getElementById('chNewPrice').value);
+  if (!name || !price || price <= 0) { showToast('Completa nombre y precio'); return; }
+  const chems = getChems();
+  chems.push({ id: 'chem_' + Date.now(), name, price, color: '#888' });
+  saveChems(chems);
+  renderChemicals(document.getElementById('cnt'));
+};
+
+window.deleteChem = function(i) {
+  const chems = getChems();
+  if (chems.length <= 1) { showToast('Debe haber al menos un químico'); return; }
+  chems.splice(i, 1); saveChems(chems);
+  renderChemicals(document.getElementById('cnt'));
+};
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// Show PIN screen
+document.getElementById('pin-screen').style.display = 'flex';
+document.getElementById('pin-screen').style.flexDirection = 'column';
+renderPin('unlock');
+</script>
+</body>
+</html>
