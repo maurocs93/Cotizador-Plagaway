@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Plagaway">
+<meta name="theme-color" content="#f5c800">
+<link rel="manifest" href="manifest.json">
+<title>Plagaway · Cotizador</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0d0d0d;--bg2:#141414;--bg3:#1c1c1c;--border:#272727;--border2:#1e1e1e;--y:#f5c800;--y2:#c9a200;--y3:#7a6100;--y4:#1a1600;--tx:#f5f0e8;--tx2:#c8c0b0;--mu:#888880;--mu2:#555550;--mu3:#333330;--red:#ff4444;--blue:#4ac8f0;--green:#72c040;--orange:#ff8844}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Helvetica Neue',Arial,sans-serif;overscroll-behavior:none;font-size:15px}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hdr{padding:13px 18px 10px;border-bottom:2px solid var(--y3);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg);z-index:20}
+.logo-wm{font-size:22px;font-weight:900;color:var(--tx);letter-spacing:-1px;line-height:1}.logo-wm b{color:var(--y)}
+.logo-pill{background:var(--y);color:#0d0d0d;font-size:7px;font-weight:900;letter-spacing:.15em;padding:3px 6px;text-transform:uppercase;align-self:flex-start;margin-top:2px}
+.hdr-row{display:flex;align-items:center;gap:8px}
+.hdr-sub{font-size:9px;color:var(--mu2);margin-top:4px;letter-spacing:.05em}
+.hdr-right{display:flex;gap:7px;align-items:center;margin-top:2px}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--mu);padding:7px 11px;font-size:9px;font-weight:700;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;font-family:inherit}
+.prog{display:flex;padding:0 18px;background:var(--bg);border-bottom:1px solid var(--border2)}
+.ps{flex:1;padding:7px 0}.pb{height:3px;background:var(--border2);transition:background .3s}
+.pb.done{background:var(--y2)}.pb.act{background:var(--y)}
+.pl{font-size:7px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu3);margin-top:4px;transition:color .3s}
+.pl.act{color:var(--y)}.pl.done{color:var(--mu2)}
+.cnt{padding:18px 18px 90px;flex:1}
+.fade{animation:fu .22s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.st{margin-bottom:16px;display:flex;align-items:baseline;gap:10px}
+.st-n{font-size:10px;font-weight:900;color:#0d0d0d;background:var(--y);padding:3px 7px;letter-spacing:.1em;flex-shrink:0}
+.st-h{font-size:19px;font-weight:700;color:var(--tx)}
+.lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.g1{display:grid;gap:7px}
+.card{background:var(--bg2);border:1px solid var(--border);color:var(--tx2);padding:12px 14px;cursor:pointer;font-family:inherit;transition:all .12s;text-align:left;width:100%;-webkit-appearance:none}
+.card:active{transform:scale(.97)}.card.on{background:var(--y4);border-color:var(--y);color:var(--tx)}
+.ct{font-size:14px;font-weight:600;margin-bottom:3px}.cs{font-size:10px;color:var(--mu2)}.ch{font-size:10px;color:var(--mu3);margin-top:3px}
+.ctag{font-size:9px;color:var(--red);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.badge-best{display:inline-block;font-size:8px;font-weight:900;padding:2px 7px;letter-spacing:.1em;margin-bottom:5px}
+.cat-group{margin-bottom:12px}
+.cat-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;user-select:none}
+.cat-hdr.open{border-color:var(--y2);background:var(--y4)}
+.cat-title{font-size:15px;font-weight:700;color:var(--tx)}.cat-sub{font-size:10px;color:var(--mu2);margin-top:2px}
+.cat-ch{font-size:14px;color:var(--mu2);transition:transform .2s}.cat-ch.open{transform:rotate(180deg);color:var(--y)}
+.cat-body{border:1px solid var(--border);border-top:none;padding:10px;display:none}.cat-body.open{display:grid;gap:7px}
+.irow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.im2{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:11px 13px;font-size:30px;font-weight:300;font-family:inherit;width:130px;outline:none;-webkit-appearance:none}
+.im2:focus{border-color:var(--y)}.iu{color:var(--mu);font-size:18px}
+.bsug{background:transparent;border:1px solid var(--border);color:var(--mu);font-size:9px;font-weight:700;padding:6px 10px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-family:inherit}
+.inp-text{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:100%}
+.inp-text:focus{border-color:var(--y)}
+.inp-num{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:80px;-webkit-appearance:none}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.trow.on{border-color:var(--y);background:var(--y4)}
+.tlbl{font-size:13px;font-weight:500;color:var(--mu);transition:color .2s}.trow.on .tlbl{color:var(--tx)}
+.tsub{font-size:10px;color:var(--mu2);margin-top:2px}
+.tsw{width:36px;height:20px;background:var(--border);border-radius:10px;position:relative;flex-shrink:0;transition:background .2s}
+.trow.on .tsw{background:var(--y)}
+.tkn{width:14px;height:14px;background:var(--mu3);border-radius:50%;position:absolute;top:3px;left:3px;transition:all .2s}
+.trow.on .tkn{left:19px;background:#0d0d0d}
+.qty-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--y4);border:1px solid var(--y);border-top:none}
+.qty-btn{background:var(--border);border:none;color:var(--tx);width:30px;height:30px;font-size:16px;cursor:pointer;font-weight:700;font-family:inherit}
+.qty-val{font-size:16px;font-weight:700;color:var(--y);min-width:24px;text-align:center}.qty-price{font-size:11px;color:var(--mu2)}
+input[type=range]{width:100%;accent-color:var(--y);height:4px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--y);border-radius:50%;cursor:pointer}
+.rlbls{display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:var(--mu2);margin-top:6px;text-transform:uppercase}
+.blk{margin-bottom:20px}
+.note-inp{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:11px 13px;font-family:inherit;font-size:13px;outline:none;width:100%;resize:none;height:75px;line-height:1.4}
+.note-inp:focus{border-color:var(--y)}
+.cta{width:100%;background:var(--y);color:#0d0d0d;border:none;padding:16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-family:inherit;font-weight:900;cursor:pointer;margin-top:10px;transition:opacity .15s}
+.cta:active{opacity:.85}.cta.sec{background:transparent;border:1px solid var(--border);color:var(--mu);font-weight:700}
+.cta.oy{background:transparent;border:2px solid var(--y);color:var(--y);font-weight:900}
+.cta.ob{background:transparent;border:2px solid var(--blue);color:var(--blue);font-weight:900}
+.rbox{border:2px solid var(--y);padding:20px;background:var(--bg2);margin-bottom:14px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.rdiv{border:none;border-top:1px solid var(--border2);margin-bottom:16px}
+.rpl{font-size:9px;font-weight:800;color:var(--mu2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
+.rpv{font-size:24px;font-weight:300}.rpv.y{color:var(--y);font-weight:700}.rpv.b{color:var(--blue)}.rpv.w{color:var(--tx)}.rpv.g{color:var(--green)}
+.rps{font-size:9px;color:var(--mu3);margin-top:3px}
+.psel{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.popt{padding:13px 14px;border:2px solid var(--border);cursor:pointer;transition:all .15s;background:var(--bg2)}
+.popt.on{border-color:var(--y);background:var(--y4)}
+.popt-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:var(--mu2);margin-bottom:4px}
+.popt.on .popt-lbl{color:var(--y)}.popt-val{font-size:20px;font-weight:700;color:var(--tx)}.popt.on .popt-val{color:var(--y)}
+.popt-sub{font-size:9px;color:var(--mu3);margin-top:3px}
+.cbox{border:1px solid var(--border);background:var(--bg2);margin-bottom:12px;overflow:hidden}
+.cbox-hdr{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;cursor:pointer}
+.cbox-title{font-size:10px;font-weight:800;color:var(--mu2);letter-spacing:.18em;text-transform:uppercase}
+.cbox-ch{font-size:14px;color:var(--mu2);transition:transform .2s}.cbox-ch.open{transform:rotate(180deg)}
+.cbox-body{border-top:1px solid var(--border2);display:none}.cbox-body.open{display:block}
+.cbox-sec{padding:11px 15px;border-bottom:1px solid var(--border2)}.cbox-sec:last-child{border-bottom:none}
+.cbox-sec-t{font-size:9px;font-weight:800;color:var(--mu3);letter-spacing:.13em;text-transform:uppercase;margin-bottom:7px}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2)}.crow:last-child{border-bottom:none}
+.crl{font-size:11px;color:var(--mu)}.crv{font-size:12px;font-weight:600}
+.ibar{padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--y);font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.5}
+.ibar strong{color:var(--y)}.ibar.bl{border-left-color:var(--blue)}.ibar.bl strong{color:var(--blue)}
+.nav{display:flex;border-top:1px solid var(--border);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg);z-index:20}
+.nav-tab{flex:1;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:transparent;font-family:inherit;color:var(--mu2);transition:color .15s}
+.nav-tab.act{color:var(--y)}.nav-icon{font-size:17px;line-height:1}
+.nav-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.hist-item{background:var(--bg2);border:1px solid var(--border);padding:12px 14px;margin-bottom:7px}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.hist-name{font-size:13px;font-weight:700;color:var(--tx)}.hist-price{font-size:15px;font-weight:700;color:var(--y)}
+.hist-meta{font-size:10px;color:var(--mu2)}.hist-del{background:transparent;border:none;color:var(--mu3);font-size:14px;cursor:pointer;padding:2px 4px}
+.s-row{display:flex;gap:8px;margin-bottom:14px}
+.s-inp{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none}
+.s-inp:focus{border-color:var(--y)}
+.s-sel{background:var(--bg2);border:1px solid var(--border);color:var(--mu);padding:10px;font-family:inherit;font-size:12px;outline:none;cursor:pointer}
+.chem-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);margin-bottom:6px}
+.chem-del{background:transparent;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;font-weight:700}
+.add-row{display:grid;grid-template-columns:1fr auto auto;gap:7px;margin-top:9px}
+.btn-add{background:var(--y);color:#0d0d0d;border:none;padding:10px 14px;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit}
+.cs-item{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.cs-item.on{background:var(--y4);border-color:var(--y)}
+.cs-chk{width:18px;height:18px;border:2px solid var(--border);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#0d0d0d}
+.cs-item.on .cs-chk{background:var(--y);border-color:var(--y)}
+.pin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:40px 20px;gap:22px}
+.pin-logo{font-size:32px;font-weight:900;color:var(--tx);letter-spacing:-1px}.pin-logo b{color:var(--y)}
+.pin-sub{font-size:11px;color:var(--mu2);letter-spacing:.1em;text-transform:uppercase;text-align:center}
+.pin-dots{display:flex;gap:14px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
+.pin-dot.filled{background:var(--y);border-color:var(--y)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:240px}
+.pin-key{background:var(--bg2);border:1px solid var(--border);color:var(--tx);font-size:20px;font-weight:600;padding:17px;cursor:pointer;font-family:inherit;transition:all .12s;border-radius:50%}
+.pin-key:active{background:var(--y);color:#0d0d0d;transform:scale(.93)}
+.pin-err{color:var(--red);font-size:11px;font-weight:700;letter-spacing:.1em;min-height:16px;text-transform:uppercase;text-align:center}
+.pin-change{background:transparent;border:none;color:var(--mu2);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;margin-top:4px}
+.pin-role{display:flex;gap:10px;margin-bottom:4px}
+.pin-role-btn{flex:1;padding:10px;border:1px solid var(--border);background:var(--bg2);color:var(--mu);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.pin-role-btn.sel{border-color:var(--y);background:var(--y4);color:var(--y)}
+.role-badge{display:inline-block;font-size:8px;font-weight:900;padding:2px 6px;letter-spacing:.1em;text-transform:uppercase;margin-left:6px}
+.role-admin{background:#1a0000;color:var(--red);border:1px solid #440000}
+.role-tech{background:#001a0a;color:var(--green);border:1px solid #004422}
+.odot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px}
+.xdot{width:7px;height:7px;border-radius:50%;background:var(--mu3);display:inline-block;margin-right:5px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:6px;vertical-align:middle}
+.sync-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+<div id="ps" style="display:none"></div>
+<div id="app" style="display:none;flex-direction:column">
+  <div class="hdr">
+    <div>
+      <div class="hdr-row"><div class="logo-wm">PLAGA<b>W</b>AY</div><div class="logo-pill">Pro</div></div>
+      <div class="hdr-sub" id="cs"><span class="xdot"></span>Conectando...</div>
+    </div>
+    <div class="hdr-right">
+      <button class="btn-sm" id="btnr" style="display:none" onclick="resetQ()">← Nueva</button>
+      <button class="btn-sm" id="btn-cfg" style="display:none" onclick="showCfg()">⚙️</button>
+      <button class="btn-sm" onclick="showPinChange()">🔒</button>
+    </div>
+  </div>
+  <div class="prog" id="pgbar">
+    <div class="ps"><div class="pb" id="pb1"></div><div class="pl" id="pl1">Lugar</div></div>
+    <div class="ps"><div class="pb" id="pb2"></div><div class="pl" id="pl2">Plaga</div></div>
+    <div class="ps"><div class="pb" id="pb3"></div><div class="pl" id="pl3">Paquete</div></div>
+    <div class="ps"><div class="pb" id="pb4"></div><div class="pl" id="pl4">Detalles</div></div>
+    <div class="ps"><div class="pb" id="pb5"></div><div class="pl" id="pl5">Precio</div></div>
+  </div>
+  <div class="cnt fade" id="cnt"></div>
+  <div class="nav">
+    <button class="nav-tab act" id="nt0" onclick="swTab(0)"><div class="nav-icon">🧮</div><div class="nav-lbl">Cotizar</div></button>
+    <button class="nav-tab" id="nt1" onclick="swTab(1)"><div class="nav-icon">📋</div><div class="nav-lbl">Historial</div></button>
+    <button class="nav-tab" id="nt2" onclick="swTab(2)"><div class="nav-icon">⚗️</div><div class="nav-lbl">Químicos</div></button>
+    <button class="nav-tab" id="nt3" onclick="swTab(3)"><div class="nav-icon">👤</div><div class="nav-lbl">Equipo</div></button>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCGz0t2xfeiMxYIcgVVQTp0bCHY6scIR_w",
+  authDomain: "calculadora-plagaway.firebaseapp.com",
+  projectId: "calculadora-plagaway",
+  storageBucket: "calculadora-plagaway.firebasestorage.app",
+  messagingSenderId: "257562908832",
+  appId: "1:257562908832:web:14f673952eabba313c51c5"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const fsdb = getFirestore(fbApp);
+
+// ── FIREBASE HELPERS ─────────────────────────────────────────────────────────
+async function fbGet(docPath) {
+  try { const s = await getDoc(doc(fsdb, docPath)); return s.exists() ? s.data() : null; } catch { return null; }
+}
+async function fbSet(docPath, data) {
+  try { await setDoc(doc(fsdb, docPath), data, {merge:true}); return true; } catch(e) { console.error(e); return false; }
+}
+function fbListen(docPath, cb) {
+  return onSnapshot(doc(fsdb, docPath), snap => { if(snap.exists()) cb(snap.data()); });
+}
+function fbListenCol(colPath, cb) {
+  return onSnapshot(query(collection(fsdb, colPath), orderBy('date','desc')), snap => {
+    cb(snap.docs.map(d=>({...d.data(), _id:d.id})));
+  });
+}
+async function fbAddHist(entry) {
+  try { await addDoc(collection(fsdb, 'history'), entry); return true; } catch { return false; }
+}
+async function fbDelHist(id) {
+  try { await deleteDoc(doc(fsdb, 'history', id)); return true; } catch { return false; }
+}
+
+// Expose to window for non-module code
+window.FB = { fbGet, fbSet, fbListen, fbListenCol, fbAddHist, fbDelHist };
+
+// ── INIT FIREBASE DATA ────────────────────────────────────────────────────────
+// Load shared config on start
+async function loadSharedConfig() {
+  const cfg = await fbGet('config/shared');
+  if (cfg) {
+    if (cfg.chems) window._fbChems = cfg.chems;
+    if (cfg.sellers) window._fbSellers = cfg.sellers;
+    if (cfg.adminPin) window._fbAdminPin = cfg.adminPin;
+    if (cfg.techPin) window._fbTechPin = cfg.techPin;
+  } else {
+    // First time: push defaults
+    await fbSet('config/shared', {
+      chems: [{id:'cynoff',name:'Cynoff 40',price:16.25},{id:'demand',name:'Demand Duo',price:21.73}],
+      sellers: ['Heriberto','Mauro'],
+      adminPin: '1234',
+      techPin: '0000'
+    });
+    window._fbAdminPin = '1234';
+    window._fbTechPin = '0000';
+  }
+
+  // Listen for real-time config changes
+  fbListen('config/shared', data => {
+    if (data.chems) window._fbChems = data.chems;
+    if (data.sellers) window._fbSellers = data.sellers;
+    if (data.adminPin) window._fbAdminPin = data.adminPin;
+    if (data.techPin) window._fbTechPin = data.techPin;
+    updCS();
+  });
+
+  // Listen for history
+  fbListenCol('history', entries => {
+    window._fbHist = entries;
+    if (window._histCallback) window._histCallback(entries);
+  });
+
+  window._fbReady = true;
+  updCS();
+}
+
+loadSharedConfig();
+</script>
+
+<script>
+// ── LOCAL STORAGE FALLBACK ────────────────────────────────────────────────────
+const db={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+
+function getChems(){return window._fbChems || db.get('pw_chems') || [{id:'cynoff',name:'Cynoff 40',price:16.25},{id:'demand',name:'Demand Duo',price:21.73}]}
+async function saveChems(c){window._fbChems=c;if(window.FB)await window.FB.fbSet('config/shared',{chems:c});else db.set('pw_chems',c)}
+
+function getSellers(){return window._fbSellers || db.get('pw_sellers') || ['Heriberto','Mauro']}
+async function saveSellers(s){window._fbSellers=s;if(window.FB)await window.FB.fbSet('config/shared',{sellers:s});else db.set('pw_sellers',s)}
+
+function getHist(){return window._fbHist || db.get('pw_hist') || []}
+async function addHistEntry(e){
+  const entry={...e,date:new Date().toLocaleDateString('es-MX'),ts:Date.now()};
+  if(window.FB){await window.FB.fbAddHist(entry)}
+  else{const h=getHist();h.unshift(entry);if(h.length>100)h.pop();db.set('pw_hist',h)}
+}
+async function delHistEntry(id){
+  if(window.FB&&id){await window.FB.fbDelHist(id)}
+  else{const h=db.get('pw_hist')||[];const idx=h.findIndex(x=>x.id===id);if(idx>=0){h.splice(idx,1);db.set('pw_hist',h)}}
+}
+
+// ── PINS (Firebase-backed) ────────────────────────────────────────────────────
+// Roles: 'admin' = full access, 'tech' = cotizar + historial only
+let currentRole = null;
+
+function getAdminPin(){return window._fbAdminPin || db.get('pw_apin') || '1234'}
+function getTechPin(){return window._fbTechPin || db.get('pw_tpin') || '0000'}
+async function setAdminPin(p){window._fbAdminPin=p;if(window.FB)await window.FB.fbSet('config/shared',{adminPin:p});else db.set('pw_apin',p)}
+async function setTechPin(p){window._fbTechPin=p;if(window.FB)await window.FB.fbSet('config/shared',{techPin:p});else db.set('pw_tpin',p)}
+
+function isAdmin(){return currentRole==='admin'}
+
+function updCS(){
+  const e=document.getElementById('cs');if(!e)return;
+  const ready=window._fbReady;
+  e.innerHTML=ready
+    ?`<span class="sync-dot" style="background:var(--green)"></span>Sincronizado · ${currentRole==='admin'?'<span class="role-badge role-admin">Admin</span>':'<span class="role-badge role-tech">Técnico</span>'}`
+    :`<span class="xdot"></span>Conectando...`;
+  // Show config button only for admin
+  const cfg=document.getElementById('btn-cfg');
+  if(cfg)cfg.style.display=isAdmin()?'':'none';
+}
+
+// ── PIN SCREEN ────────────────────────────────────────────────────────────────
+function renderPin(mode, onOk) {
+  const ps=document.getElementById('ps');
+  ps.style.cssText='display:flex;flex-direction:column;min-height:100vh';
+  let buf='',step=0,fp='',selectedRole='tech',changingRole=null;
+
+  function draw(err=''){
+    const isUnlock=mode==='unlock';
+    const isChange=mode==='changeAdmin'||mode==='changeTech';
+    ps.innerHTML=`<div class="pin-wrap">
+      <div class="pin-logo">PLAGA<b>W</b>AY</div>
+      ${isUnlock?`
+        <div class="pin-sub">Selecciona tu rol</div>
+        <div class="pin-role">
+          <div class="pin-role-btn ${selectedRole==='tech'?'sel':''}" onclick="selRole('tech')">👷 Técnico</div>
+          <div class="pin-role-btn ${selectedRole==='admin'?'sel':''}" onclick="selRole('admin')">🔑 Admin</div>
+        </div>`
+      :`<div class="pin-sub">${step===0?(mode==='changeAdmin'?'Nuevo PIN Admin':'Nuevo PIN Técnico'):'Confirmar PIN'}</div>`}
+      <div class="pin-dots">${[0,1,2,3].map(i=>`<div class="pin-dot ${buf.length>i?'filled':''}"></div>`).join('')}</div>
+      <div class="pin-err">${err}</div>
+      <div class="pin-pad">${[1,2,3,4,5,6,7,8,9,'','0','⌫'].map(k=>`<button class="pin-key" onclick="pk('${k}')" ${k===''?'style="visibility:hidden"':''}>${k}</button>`).join('')}</div>
+      ${isChange?`<button class="pin-change" onclick="cancelPC()">Cancelar</button>`:''}
+    </div>`;
+
+    window.selRole=r=>{selectedRole=r;draw()};
+    window.pk=k=>{
+      if(k==='⌫'){buf=buf.slice(0,-1);draw();return}
+      if(buf.length>=4)return;buf+=k;draw();
+      if(buf.length===4)setTimeout(()=>chk(buf),120)
+    };
+  }
+
+  function chk(entered){
+    if(mode==='unlock'){
+      if(entered===getAdminPin()){currentRole='admin';unlock(onOk)}
+      else if(entered===getTechPin()){currentRole='tech';unlock(onOk)}
+      else{buf='';draw('PIN incorrecto')}
+    } else {
+      if(step===0){fp=entered;buf='';step=1;draw()}
+      else{
+        if(entered===fp){
+          if(mode==='changeAdmin')setAdminPin(entered).then(()=>{cancelPC();toast('PIN Admin actualizado ✓')});
+          else setTechPin(entered).then(()=>{cancelPC();toast('PIN Técnico actualizado ✓')});
+        } else {buf='';step=0;fp='';draw('No coinciden, intenta de nuevo')}
+      }
+    }
+  }
+
+  function unlock(cb){
+    ps.style.display='none';
+    const a=document.getElementById('app');a.style.display='flex';a.style.flexDirection='column';
+    updCS();if(cb)cb();else render();
+  }
+
+  draw();
+}
+
+function showPinChange(){
+  if(!isAdmin()){toast('Solo Admin puede cambiar PINs');return}
+  showCfg();
+}
+
+window.cancelPC=()=>{
+  document.getElementById('ps').style.display='none';
+  const a=document.getElementById('app');a.style.display='flex';a.style.flexDirection='column';
+};
+
+// ── CONFIG PANEL (Admin only) ─────────────────────────────────────────────────
+function showCfg(){
+  const c=document.getElementById('cnt');
+  document.getElementById('pgbar').style.display='none';
+  document.getElementById('btnr').style.display='none';
+  c.className='cnt fade';void c.offsetWidth;
+  c.innerHTML=`<div class="st"><span class="st-n">⚙️</span><span class="st-h">Configuración Admin</span></div>
+  <div style="margin-bottom:20px;padding:12px 14px;background:var(--bg2);border:1px solid var(--red);border-left:3px solid var(--red)">
+    <div style="font-size:11px;color:var(--mu)">Acceso restringido · <span style="color:var(--red);font-weight:700">Solo Admin</span></div>
+  </div>
+  <div class="blk">
+    <span class="lbl">PINs de acceso</span>
+    <div class="g1" style="margin-top:9px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 14px;background:var(--bg2);border:1px solid var(--border)">
+        <div><div style="font-size:13px;font-weight:700;color:var(--tx)">PIN Admin <span class="role-badge role-admin">ADMIN</span></div>
+        <div style="font-size:10px;color:var(--mu2);margin-top:3px">Tú y Heriberto. Acceso total.</div></div>
+        <button class="btn-sm" onclick="changePinFlow('changeAdmin')">Cambiar</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 14px;background:var(--bg2);border:1px solid var(--border)">
+        <div><div style="font-size:13px;font-weight:700;color:var(--tx)">PIN Técnico <span class="role-badge role-tech">TÉCNICO</span></div>
+        <div style="font-size:10px;color:var(--mu2);margin-top:3px">Técnicos de campo. Solo cotizar e historial.</div></div>
+        <button class="btn-sm" onclick="changePinFlow('changeTech')">Cambiar</button>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--mu3);margin-top:8px">Si un técnico ya no trabaja: cambia el PIN Técnico y pierde acceso inmediatamente.</div>
+  </div>
+  <button class="cta sec" onclick="swTab(0)">← Volver</button>`;
+}
+
+function changePinFlow(mode){
+  document.getElementById('app').style.display='none';
+  renderPin(mode);
+}
+
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const FIJOS=167,GAS=123,CONS=6.25;
+const EXPOGAN_REF=7700;
+const CHEM_PROFILES={
+  exterior:{demand:3.5,cynoff:0},
+  hogar_completo:{cynoff:7,demand:0},
+  evento_per_m2:{cynoff:0.01109,demand:0.00817},
+};
+
+const PLAGAS={
+  comun:    {label:'Plaga Común',         sub:'Cucaracha, grillo, araña, pescadito',color:'#f5c800',litros:.075,lineal:.03,b:false},
+  voladores:{label:'Insectos Voladores',  sub:'Moscas, mosquitos, zancudos',        color:'#4ac8f0',litros:.06, lineal:.02,b:false},
+  especial: {label:'Plaga Especial',      sub:'Chinches, termita, roedores',        color:'#ff4444',litros:.10, lineal:.04,b:true,tag:true},
+  alacran:  {label:'Alacrán (correctivo)',sub:'Presencia activa confirmada',         color:'#ff8844',litros:.12, lineal:.05,b:true,tag:true},
+};
+
+// Lugares: hogar_ext moved OUT of the category list — it appears as a package option in S3
+const LUGAR_CATS=[
+  {id:'hogar',label:'Hogar',sub:'Residencia',icon:'🏠',lugares:[
+    {id:'hogar',label:'Hogar / Residencia',sub:'Interior y exterior',m2:200,mult:1.0},
+  ]},
+  {id:'negocio',label:'Negocios',sub:'Comercio y servicios',icon:'🏪',lugares:[
+    {id:'restaurante',label:'Restaurante / Cafetería',sub:'Food service · COFEPRIS',m2:150,mult:1.2},
+    {id:'oficina',label:'Oficinas / Locales',sub:'Corporativo y comercio',m2:200,mult:1.0},
+    {id:'hotel',label:'Hotel / Hospedaje',sub:'Turismo y hospitalidad',m2:400,mult:1.25},
+    {id:'otro_neg',label:'Otro negocio',sub:'Captura manual de m²',m2:0,mult:1.05},
+  ]},
+  {id:'industria',label:'Industrias',sub:'Manufactura y logística',icon:'🏭',lugares:[
+    {id:'bodega',label:'Bodega / Almacén',sub:'Logística e industrial',m2:500,mult:1.15},
+    {id:'planta',label:'Planta Industrial',sub:'Manufactura y producción',m2:800,mult:1.3},
+    {id:'otro_ind',label:'Otro giro industrial',sub:'Captura manual de m²',m2:0,mult:1.2},
+  ]},
+  {id:'evento',label:'Eventos',sub:'Al aire libre o en recinto',icon:'🎪',lugares:[
+    {id:'evento_abierto',label:'Al aire libre',sub:'Expogan, palenques, ferias',m2:1000,mult:1.35,lineal:true},
+    {id:'evento_cerrado',label:'Recinto cerrado',sub:'Salones, auditorios, expos',m2:500,mult:1.25},
+  ]},
+];
+
+// hogar_ext is a virtual lugar used only in package selection
+const HOGAR_EXT_LUGAR={id:'hogar_ext',label:'Solo Exterior',sub:'Perímetro y jardín',m2:200,mult:0.60,exteriorOnly:true};
+
+function allL(){return [...LUGAR_CATS.flatMap(c=>c.lugares), HOGAR_EXT_LUGAR]}
+function findL(id){return allL().find(l=>l.id===id)}
+
+// ── PAQUETES ──────────────────────────────────────────────────────────────────
+const PKS=[
+  {
+    id:'basico',label:'Hogar Seguro',badge:null,bc:'#555',
+    tagline:'Esencial · Lo necesario, bien hecho',mult:.72,
+    hInc:[
+      'Control de cucaracha de cocina y alcantarilla',
+      'Control de grillo y pescadito de plata',
+      'Control de araña viuda negra y violinista',
+      'Aspersión manual en puntos críticos (zócalos, grietas, rendijas)',
+      'Gel de cebo focalizado en cocina y baños (según evaluación técnica)',
+      'Certificado de servicio (si aplica)',
+      'Garantía: 30 días de respaldo',
+    ],
+    gInc:[
+      'Control de plagas básicas del área',
+      'Aspersión manual en puntos críticos (zócalos, grietas, rendijas)',
+      'Gel de cebo focalizado en zonas de alta actividad',
+      'Certificado de servicio (si aplica)',
+      'Garantía: 30 días',
+    ],
+    extInc:[
+      'Control perimetral de cucaracha, grillo, araña viuda negra y violinista',
+      'Aspersión en fachada, jardín, perímetro exterior y accesos',
+      'Barrera química en puntos de entrada al interior',
+      'Certificado de servicio (si aplica)',
+      'Garantía: 30 días de respaldo',
+    ],
+    desc:'Existe para que el paquete siguiente parezca irresistible.',color:'#888880',
+  },
+  {
+    id:'completo',label:'Blindaje Total',badge:'MÁS VENDIDO',bc:'#f5c800',
+    tagline:'El favorito · Protección real, garantía real',mult:1.0,
+    hInc:[
+      'Control de cucaracha de cocina y alcantarilla',
+      'Control de grillo, pescadito de plata, araña viuda negra y violinista',
+      'Control adicional de garrapata (nivel leve a moderado)',
+      'Productos con tecnología de microcápsulas iCAP (mayor duración)',
+      'Retiro de telarañas con cepillos especializados de largo alcance',
+      'Limpieza de nidos visibles y sacos de huevos de arácnidos',
+      'Barrera perimetral exterior (plagas detenidas antes de entrar)',
+      'Reporte digital de puntos de riesgo enviado por WhatsApp',
+      'Tratamiento de drenajes y coladeras (sellado químico anti-insectos)',
+      'Garantía: 90 días + visita de refuerzo programada a los 30 días',
+    ],
+    gInc:[
+      'Control de plagas básicas y voladores del área',
+      'Productos con tecnología de microcápsulas iCAP (mayor duración y residualidad)',
+      'Barrera perimetral exterior completa',
+      'Retiro de telarañas y limpieza de nidos visibles',
+      'Reporte digital de puntos de riesgo por WhatsApp',
+      'Tratamiento de drenajes y coladeras (sellado químico)',
+      'Garantía: 90 días + visita de refuerzo a los 30 días',
+    ],
+    extInc:[
+      'Control perimetral completo: cucaracha, grillo, araña, garrapata',
+      'Productos con tecnología iCAP de microcápsulas (residualidad extendida)',
+      'Barrera química reforzada en todo el perímetro exterior',
+      'Tratamiento de coladeras y desagües exteriores',
+      'Retiro de telarañas en fachada, cornisas y marcos exteriores',
+      'Reporte digital de puntos de riesgo por WhatsApp',
+      'Garantía: 90 días + visita de refuerzo programada a los 30 días',
+    ],
+    desc:'El 70% de los clientes eligen este. Tu mayor rentabilidad.',color:'#f5c800',
+  },
+  {
+    id:'premium',label:'Blindaje Élite',badge:'PREMIUM',bc:'#4ac8f0',
+    tagline:'Sin límites · La máxima protección disponible',mult:2.6,
+    hInc:[
+      'Control de cucaracha, grillo, pescadito de plata, araña viuda negra y violinista',
+      'Control de garrapata, roedores y alacranes',
+      'Productos con tecnología de microcápsulas iCAP',
+      'Retiro de telarañas con cepillos de largo alcance',
+      'Limpieza de nidos visibles y sacos de huevos',
+      'Barrera perimetral exterior activa',
+      'Fumigación de jardín y áreas verdes (nebulización térmica)',
+      'Inspección con informe fotográfico de puntos de entrada por WhatsApp',
+      'Asesoría telefónica 24/7',
+      'Desinfección de superficies de alto contacto (virucida/bactericida)',
+      'Protocolo de Purificación y Sello Olfativo (ozono): elimina olores residuales y deja un ambiente sanitizado',
+      'Instalación de cebo para mosca',
+      'Sellado de puertas de entrada con silicón anti-plagas',
+      'Guardapolvo en puertas principales (opcional)',
+      'Aspiración y retiro de cadáveres encontrados durante el servicio',
+      'Diagnóstico nocturno de alacranes con iluminación UV',
+      'Escudo de drenajes: instalación de malla en coladeras',
+      '"WhatsApp ID Express": envíanos foto de un insecto y te asesoramos al instante',
+      'Garantía SOS: si determinamos emergencia, eres prioridad #1 al día siguiente',
+      'Garantía: 90 días + visita de refuerzo programada a los 30 días',
+    ],
+    gInc:[
+      'Control de todas las plagas básicas del área',
+      'Control de roedores y plagas especializadas',
+      'Productos con tecnología de microcápsulas iCAP',
+      'Barrera perimetral exterior activa',
+      'Retiro de telarañas y limpieza de nidos visibles',
+      'Fumigación de áreas exteriores y perimetrales',
+      'Reporte fotográfico completo de puntos de entrada por WhatsApp',
+      'Asesoría telefónica 24/7',
+      'Desinfección de superficies de alto contacto (virucida/bactericida)',
+      'Protocolo de Purificación y Sello Olfativo (ozono): ambiente 100% sanitizado',
+      'Instalación de trampas y cebos especializados',
+      'Tratamiento de drenajes y coladeras (sellado + malla)',
+      '"WhatsApp ID Express": identificación de especie por foto al instante',
+      'Garantía SOS: emergencia = prioridad #1 en agenda del día siguiente',
+      'Garantía: 90 días + visita de refuerzo programada a los 30 días',
+    ],
+    extInc:[
+      'Control perimetral total: cucaracha, grillo, araña, garrapata, alacrán y roedores',
+      'Productos con tecnología iCAP de microcápsulas',
+      'Fumigación de jardín y áreas verdes (nebulización térmica)',
+      'Barrera perimetral exterior activa reforzada',
+      'Tratamiento de coladeras y desagües con sellado + malla',
+      'Inspección con informe fotográfico por WhatsApp',
+      'Protocolo de Purificación y Sello Olfativo exterior (ozono)',
+      'Asesoría telefónica 24/7',
+      '"WhatsApp ID Express": identificación de especie por foto al instante',
+      'Garantía SOS: emergencia = prioridad #1 al día siguiente',
+      'Garantía: 90 días + visita de refuerzo programada a los 30 días',
+    ],
+    desc:'Para clientes que no escatiman en protección y tranquilidad.',color:'#4ac8f0',
+  },
+];
+
+const FREQS=[
+  {id:'unica', label:'Única vez',      desc:0,   g:'Garantía según paquete'},
+  {id:'men3',  label:'Póliza 3 meses', desc:.03, g:'Revisita sin costo'},
+  {id:'men6',  label:'Póliza 6 meses', desc:.05, g:'Revisita sin costo'},
+  {id:'men12', label:'Póliza 12 meses',desc:.09, g:'Revisita + prioridad'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let S=iS(),tab=0,openCats={};
+function iS(){return{step:1,lugar:null,m2:'',linealM:'',useLineal:false,plaga:null,paquete:null,selectedChems:[],freq:'unica',foraneo:false,cert:false,hormiga:false,trampaMosca:false,trampaMoscaQty:1,cebaderoRoedor:false,cebaderoQty:1,infestacion:'normal',horario:'normal',margen:38,result:null,clientName:'',clientAddr:'',notes:'',seller:'',sharePrice:'standard'}}
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-MX');
+
+// ── CALC ──────────────────────────────────────────────────────────────────────
+function calcFor(lugarOverride,paqueteOverride,state){
+  const st=state||S;
+  const chems=getChems();
+  const p=PLAGAS[st.plaga];
+  const l=lugarOverride||st.lugar;
+  const f=FREQS.find(x=>x.id===st.freq);
+  const pk=PKS.find(x=>x.id===(paqueteOverride||st.paquete));
+  const sc=st.selectedChems.map(id=>chems.find(c=>c.id===id)).filter(Boolean);
+
+  let area=0,lineal=0;
+  if(st.useLineal&&st.linealM){lineal=parseFloat(st.linealM);area=lineal*3}
+  else{area=parseFloat(st.m2)||0}
+
+  let cq=0;
+  const isHogar=l.id==='hogar'||l.id==='hogar_ext';
+  const isEvento=l.id==='evento_abierto'||l.id==='evento_cerrado';
+  if(isHogar){
+    cq=l.exteriorOnly?(3.5*21.73):(7*16.25);
+  } else if(isEvento&&area>0){
+    cq=area*CHEM_PROFILES.evento_per_m2.cynoff*16.25+area*CHEM_PROFILES.evento_per_m2.demand*21.73;
+  } else if(sc.length>0){
+    const lt=st.useLineal?lineal*p.lineal:area*p.litros,lpc=lt/sc.length;
+    sc.forEach(c=>{cq+=lpc*c.price});
+    if(p.b&&sc.length===1)cq*=1.4;
+  } else {
+    const lt=st.useLineal?lineal*p.lineal:area*p.litros;
+    cq=lt*16.25;if(p.b)cq+=lt*.4*21.73;
+  }
+
+  let extras=0;
+  if(st.hormiga)extras+=50;
+  if(st.trampaMosca)extras+=st.trampaMoscaQty*200;
+  if(st.cebaderoRoedor)extras+=st.cebaderoQty*200;
+
+  const co=CONS+GAS+(st.foraneo?200:0),cc=st.cert?450:0;
+  const costoBase=cq+extras+co+FIJOS;
+  const pkMult=pk?pk.mult:1.0,denom=1-(st.margen/100)-.10;
+  let pb=(costoBase/denom)*l.mult*pkMult+cc;
+
+  let mm=1.0,ml=[];
+  if(st.infestacion==='alta'){mm*=1.25;ml.push('+25% infestación severa')}
+  if(st.horario==='nocturno'){mm*=1.20;ml.push('+20% horario especial')}
+
+  const pm=pb*mm,pD=pm*(1-f.desc),pI=pD*1.16,pIn=pD*.95,pInI=pIn*1.16;
+  const mano=pD*.10,util=pD*(st.margen/100);
+  const fondoCarro=pD*.08,reinversion=pD*.07;
+  const litrosInfo=isHogar?(l.exteriorOnly?'3.5L Demand Duo':'7L Cynoff 40'):`~${(area*(CHEM_PROFILES.evento_per_m2.cynoff+CHEM_PROFILES.evento_per_m2.demand)).toFixed(1)}L`;
+
+  return{cq,extras,co,cf:FIJOS,cc,mano,util,pD,pI,pIn,pInI,fondoCarro,reinversion,
+    area:area.toFixed(0),lineal:lineal.toFixed(0),g:f.g,desc:f.desc*100,ml,paquete:pk?.label||'',sc,litrosInfo};
+}
+function calc(){return calcFor(null,null,S)}
+
+// ── TAB / NAV ─────────────────────────────────────────────────────────────────
+function swTab(t){
+  // Tech role: can only access cotizar and historial
+  if(!isAdmin()&&(t===2||t===3)){toast('Acceso restringido · Solo Admin');return}
+  tab=t;
+  [0,1,2,3].forEach(i=>document.getElementById('nt'+i).className='nav-tab'+(i===t?' act':''));
+  document.getElementById('pgbar').style.display=t===0?'flex':'none';
+  document.getElementById('btnr').style.display=(t===0&&S.step>1)?'':'none';
+  const c=document.getElementById('cnt');c.className='cnt fade';void c.offsetWidth;
+  if(t===0)render();else if(t===1)rHist(c);else if(t===2)rChems(c);else rSellers(c);
+}
+
+function upProg(){[1,2,3,4,5].forEach(i=>{const b=document.getElementById('pb'+i),l=document.getElementById('pl'+i);if(!b)return;b.className='pb'+(S.step>i?' done':S.step===i?' act':'');l.className='pl'+(S.step>i?' done':S.step===i?' act':'');})}
+function render(){upProg();document.getElementById('btnr').style.display=S.step>1?'':'none';document.getElementById('pgbar').style.display='flex';const c=document.getElementById('cnt');c.className='cnt fade';void c.offsetWidth;if(S.step===1)s1(c);else if(S.step===2)s2(c);else if(S.step===3)s3(c);else if(S.step===4)s4(c);else s5(c)}
+
+// ── S1: Lugar ─────────────────────────────────────────────────────────────────
+function s1(c){
+  const sellers=getSellers();
+  c.innerHTML=`<div class="st"><span class="st-n">01</span><span class="st-h">¿Dónde es el servicio?</span></div>
+  <div class="blk"><span class="lbl">Datos del cliente</span>
+  <input class="inp-text" placeholder="Nombre del cliente (opcional)" value="${S.clientName}" oninput="S.clientName=this.value" style="margin-bottom:7px">
+  <input class="inp-text" placeholder="Dirección / referencia" value="${S.clientAddr}" oninput="S.clientAddr=this.value" style="margin-bottom:7px">
+  <select class="inp-text" onchange="S.seller=this.value" style="color:var(--mu)">
+    <option value="" ${!S.seller?'selected':''}>— Vendedor —</option>
+    ${sellers.map(s=>`<option value="${s}" ${S.seller===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <span class="lbl">Tipo de lugar</span>
+  ${LUGAR_CATS.map(cat=>`<div class="cat-group">
+    <div class="cat-hdr ${openCats[cat.id]?'open':''}" onclick="togCat('${cat.id}')">
+      <div><div class="cat-title">${cat.icon} ${cat.label}</div><div class="cat-sub">${cat.sub}</div></div>
+      <div class="cat-ch ${openCats[cat.id]?'open':''}">▼</div>
+    </div>
+    <div class="cat-body ${openCats[cat.id]?'open':''}">
+      ${cat.lugares.map(l=>`<button class="card" onclick="selL('${l.id}')">
+        <div class="ct">${l.label}</div><div class="cs">${l.sub}</div>
+        ${l.m2?`<div class="ch">${l.m2} m² sugerido</div>`:''}
+        ${l.lineal?`<div class="ch" style="color:var(--blue)">⬡ Acepta metros lineales</div>`:''}
+      </button>`).join('')}
+    </div></div>`).join('')}`;
+}
+window.togCat=id=>{openCats[id]=!openCats[id];const h=document.querySelector(`.cat-hdr[onclick="togCat('${id}')"]`),b=h?.nextElementSibling,ch=h?.querySelector('.cat-ch');if(h)h.classList.toggle('open',openCats[id]);if(b)b.classList.toggle('open',openCats[id]);if(ch)ch.classList.toggle('open',openCats[id])};
+function selL(id){S.lugar=findL(id);if(S.lugar.m2)S.m2=String(S.lugar.m2);S.useLineal=!!S.lugar.lineal;S.step=2;render()}
+
+// ── S2: Plaga + Área ──────────────────────────────────────────────────────────
+function s2(c){
+  const l=S.lugar,canL=!!l.lineal;
+  c.innerHTML=`<div class="st"><span class="st-n">02</span><span class="st-h">Plaga y área</span></div>
+  <div class="blk">
+    ${canL?`<span class="lbl">Método de medición</span><div class="g2" style="margin-bottom:12px">
+      <button class="card ${!S.useLineal?'on':''}" onclick="S.useLineal=false;render()"><div class="ct">m² (área)</div><div class="cs">Espacio total</div></button>
+      <button class="card ${S.useLineal?'on':''}" onclick="S.useLineal=true;render()"><div class="ct">ml (perímetro)</div><div class="cs">Solo alrededores</div></button>
+    </div>`:''}
+    <span class="lbl">${S.useLineal?'Metros lineales de perímetro':'Metros cuadrados del área'}</span>
+    <div class="irow">
+      <input class="im2" type="number" id="m2i" value="${S.useLineal?S.linealM:S.m2}" oninput="${S.useLineal?'S.linealM=this.value':'S.m2=this.value'}" inputmode="numeric">
+      <span class="iu">${S.useLineal?'ml':'m²'}</span>
+      ${l.m2&&!S.useLineal?`<button class="bsug" onclick="document.getElementById('m2i').value=S.m2='${l.m2}'">Sugerido (${l.m2})</button>`:''}
+    </div>
+  </div>
+  <div class="blk"><span class="lbl">Tipo de plaga</span><div class="g1">
+    ${Object.entries(PLAGAS).map(([id,p])=>`<button class="card ${S.plaga===id?'on':''}" onclick="selP('${id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="ct"><span class="dot" style="background:${p.color}"></span>${p.label}</div><div class="cs" style="margin-top:3px">${p.sub}</div></div>
+        ${p.tag?`<span class="ctag">Diferenciado</span>`:''}
+      </div></button>`).join('')}
+  </div></div>`;
+}
+function selP(id){const v=S.useLineal?S.linealM:S.m2;if(!v||parseFloat(v)<=0){const e=document.getElementById('m2i');e.focus();e.style.borderColor='#ff4444';setTimeout(()=>e.style.borderColor='',1500);return}S.plaga=id;S.step=3;render()}
+
+// ── S3: Paquete — includes Exterior option and triple-compare if hogar ────────
+function s3(c){
+  const isH=S.lugar?.id==='hogar';
+  const isExt=S.lugar?.id==='hogar_ext';
+  const isHogarFamily=isH||isExt;
+
+  c.innerHTML=`<div class="st"><span class="st-n">03</span><span class="st-h">Elige el paquete</span></div>
+
+  ${isH?`<div style="margin-bottom:14px;padding:11px 14px;background:var(--bg2);border:1px solid var(--border)">
+    <div style="font-size:10px;font-weight:800;color:var(--mu2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Tipo de servicio</div>
+    <div class="g2">
+      <button class="card ${!isExt?'on':''}" onclick="S.lugar=findL('hogar');S.m2='200';render()">
+        <div class="ct">Interior + Exterior</div><div class="cs">Servicio completo</div>
+      </button>
+      <button class="card ${isExt?'on':''}" onclick="S.lugar=findL('hogar_ext');S.m2='200';render()">
+        <div class="ct" style="color:var(--y2)">Solo Exterior</div>
+        <div class="cs">Perímetro y jardín</div>
+        <div style="font-size:9px;color:var(--green);margin-top:4px;font-weight:700">Precio más accesible</div>
+      </button>
+    </div>
+  </div>`:''}
+
+  <div class="g1">
+    ${PKS.map(pk=>{
+      const inc=isExt?pk.extInc:(isH?pk.hInc:pk.gInc);
+      return`<button class="card ${S.paquete===pk.id?'on':''}" onclick="selPk('${pk.id}')">
+        ${pk.badge?`<div style="margin-bottom:6px"><span class="badge-best" style="background:${pk.bc};color:#0d0d0d">${pk.badge}</span></div>`:'<div style="height:18px"></div>'}
+        <div class="ct" style="font-size:16px;color:${S.paquete===pk.id?pk.color:'inherit'}">${pk.label}</div>
+        <div class="cs" style="margin-top:3px;margin-bottom:10px">${pk.tagline}</div>
+        <div style="display:grid;gap:4px">${inc.map(i=>`<div style="font-size:10px;color:var(--mu2);line-height:1.4">✓ ${i}</div>`).join('')}</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--mu3);font-style:italic">${pk.desc}</div>
+      </button>`}).join('')}
+  </div>
+
+  ${isHogarFamily?`<div style="margin-top:16px;padding:13px 14px;background:var(--bg3);border:1px solid var(--border)">
+    <div style="font-size:11px;color:var(--mu2);margin-bottom:8px">¿Quieres ver los 3 paquetes con precios antes de decidir?</div>
+    <button class="cta ob" style="margin-top:0" onclick="showTriplePreview()">📊 Ver comparativa de precios</button>
+  </div>`:''}`;
+}
+function selPk(id){S.paquete=id;S.step=4;render()}
+
+// Triple preview: shows all 3 prices before committing
+function showTriplePreview(){
+  if(!S.m2||parseFloat(S.m2)<=0){toast('Ingresa los m² primero');return}
+  const rB=calcFor(null,'basico',S),rC=calcFor(null,'completo',S),rP=calcFor(null,'premium',S);
+  const isExt=S.lugar?.id==='hogar_ext';
+  const c=document.getElementById('cnt');c.className='cnt fade';void c.offsetWidth;
+  c.innerHTML=`<div class="st"><span class="st-n">03</span><span class="st-h">Comparativa de precios</span></div>
+  <div style="margin-bottom:14px;font-size:11px;color:var(--mu2)">Precios sin IVA internos. Selecciona el que quieres cotizar.</div>
+  ${[{pk:PKS[0],r:rB},{pk:PKS[1],r:rC},{pk:PKS[2],r:rP}].map(({pk,r})=>`
+    <div style="background:var(--bg2);border:1px solid ${S.paquete===pk.id?pk.color:' var(--border)'};padding:16px;margin-bottom:10px;cursor:pointer" onclick="selPk('${pk.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          ${pk.badge?`<div style="margin-bottom:4px"><span class="badge-best" style="background:${pk.bc};color:#0d0d0d">${pk.badge}</span></div>`:''}
+          <div style="font-size:15px;font-weight:700;color:${pk.color}">${pk.label}</div>
+          <div style="font-size:10px;color:var(--mu2);margin-top:2px">${isExt?'Solo Exterior':''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:700;color:var(--y)">${fmt(r.pD)}</div>
+          <div style="font-size:10px;color:var(--mu3)">sin IVA</div>
+          <div style="font-size:12px;color:var(--mu2);margin-top:2px">${fmt(r.pI)} c/IVA</div>
+        </div>
+      </div>
+      <button class="cta" style="margin-top:6px;padding:10px;font-size:11px" onclick="event.stopPropagation();selPk('${pk.id}')">Seleccionar este →</button>
+    </div>`).join('')}
+  <button class="cta sec" onclick="S.step=3;render()">← Volver a paquetes</button>`;
+}
+
+// ── S4: Detalles ──────────────────────────────────────────────────────────────
+function s4(c){
+  const chems=getChems();
+  c.innerHTML=`<div class="st"><span class="st-n">04</span><span class="st-h">Detalles del servicio</span></div>
+  <div class="blk"><span class="lbl">Químicos a utilizar</span><div class="g1" style="margin-top:9px">
+    ${chems.map(ch=>`<div class="cs-item ${S.selectedChems.includes(ch.id)?'on':''}" onclick="togC('${ch.id}')">
+      <div><div style="font-size:13px;font-weight:600;color:var(--tx)">${ch.name}</div><div style="font-size:10px;color:var(--mu2)">$${ch.price}/L</div></div>
+      <div class="cs-chk">${S.selectedChems.includes(ch.id)?'✓':''}</div>
+    </div>`).join('')}
+  </div><div style="font-size:10px;color:var(--mu3);margin-top:6px">Para hogar: volúmenes calibrados (3.5L o 7L). Selección afecta otros servicios.</div></div>
+  <div class="blk"><span class="lbl">Condición de la plaga</span><div class="g2" style="margin-top:9px">
+    <button class="card ${S.infestacion==='normal'?'on':''}" onclick="S.infestacion='normal';render()"><div class="ct">Normal</div><div class="cs">Infestación estándar</div></button>
+    <button class="card ${S.infestacion==='alta'?'on':''}" onclick="S.infestacion='alta';render()"><div class="ct" style="color:var(--red)">Severa</div><div class="cs">+25% al costo</div></button>
+  </div></div>
+  <div class="blk"><span class="lbl">Horario del servicio</span><div class="g2" style="margin-top:9px">
+    <button class="card ${S.horario==='normal'?'on':''}" onclick="S.horario='normal';render()"><div class="ct">Diurno / L–S</div><div class="cs">Horario estándar</div></button>
+    <button class="card ${S.horario==='nocturno'?'on':''}" onclick="S.horario='nocturno';render()"><div class="ct" style="color:var(--orange)">Nocturno / Dom.</div><div class="cs">+20% al costo</div></button>
+  </div></div>
+  <div class="blk"><span class="lbl">Extras</span><div class="g1" style="margin-top:9px">
+    <div class="trow ${S.foraneo?'on':''}" onclick="S.foraneo=!S.foraneo;render()"><div><div class="tlbl">Zona foránea</div><div class="tsub">+$200 traslado extendido</div></div><div class="tsw"><div class="tkn"></div></div></div>
+    <div class="trow ${S.cert?'on':''}" onclick="S.cert=!S.cert;render()"><div><div class="tlbl">Certificado COESPRISSON</div><div class="tsub">+$450 · Documento oficial</div></div><div class="tsw"><div class="tkn"></div></div></div>
+    <div class="trow ${S.hormiga?'on':''}" onclick="S.hormiga=!S.hormiga;render()"><div><div class="tlbl">Tratamiento hormigueros</div><div class="tsub">+$50 · Producto específico</div></div><div class="tsw"><div class="tkn"></div></div></div>
+    <div class="trow ${S.trampaMosca?'on':''}" onclick="S.trampaMosca=!S.trampaMosca;render()"><div><div class="tlbl">Trampas para moscas</div><div class="tsub">$200 c/u · Instalación incluida</div></div><div class="tsw"><div class="tkn"></div></div></div>
+    ${S.trampaMosca?`<div class="qty-row"><span style="font-size:12px;color:var(--mu)">Cantidad:</span><button class="qty-btn" onclick="if(S.trampaMoscaQty>1){S.trampaMoscaQty--;render()}">−</button><span class="qty-val">${S.trampaMoscaQty}</span><button class="qty-btn" onclick="S.trampaMoscaQty++;render()">+</button><span class="qty-price">${fmt(S.trampaMoscaQty*200)}</span></div>`:''}
+    <div class="trow ${S.cebaderoRoedor?'on':''}" onclick="S.cebaderoRoedor=!S.cebaderoRoedor;render()"><div><div class="tlbl">Cebaderos para roedores</div><div class="tsub">$200 c/u · Cebo incluido</div></div><div class="tsw"><div class="tkn"></div></div></div>
+    ${S.cebaderoRoedor?`<div class="qty-row"><span style="font-size:12px;color:var(--mu)">Cantidad:</span><button class="qty-btn" onclick="if(S.cebaderoQty>1){S.cebaderoQty--;render()}">−</button><span class="qty-val">${S.cebaderoQty}</span><button class="qty-btn" onclick="S.cebaderoQty++;render()">+</button><span class="qty-price">${fmt(S.cebaderoQty*200)}</span></div>`:''}
+  </div></div>
+  <div class="blk"><span class="lbl">Frecuencia / contrato</span><div class="g2" style="margin-top:9px">
+    ${FREQS.map(f=>`<button class="card ${S.freq===f.id?'on':''}" onclick="S.freq='${f.id}';render()">
+      <div class="ct">${f.label}</div>${f.desc?`<div class="cs" style="color:var(--green)">−${f.desc*100}% dcto.</div>`:''}
+      <div class="cs">${f.g}</div></button>`).join('')}
+  </div></div>
+  <div class="blk"><span class="lbl">Margen objetivo: <span style="color:var(--y)" id="mv">${S.margen}%</span></span>
+  <p style="font-size:10px;color:var(--mu2);margin:4px 0 12px">+10% mano de obra socios · Total retenido: ${S.margen+10}%</p>
+  <input type="range" min="20" max="55" value="${S.margen}" oninput="S.margen=parseInt(this.value);document.getElementById('mv').textContent=S.margen+'%'">
+  <div class="rlbls"><span>20% conservador</span><span>55% ambicioso</span></div></div>
+  <div class="blk"><span class="lbl">Notas internas</span>
+  <textarea class="note-inp" placeholder="Ej: cliente tiene perros, entrada por calle lateral..." oninput="S.notes=this.value">${S.notes}</textarea></div>
+  <button class="cta" style="margin-top:6px" onclick="doCalc()">Calcular precio →</button>`;
+}
+function togC(id){const i=S.selectedChems.indexOf(id);if(i>=0)S.selectedChems.splice(i,1);else S.selectedChems.push(id);render()}
+function doCalc(){S.result=calc();S.step=5;render()}
+
+// ── S5: Resultado ─────────────────────────────────────────────────────────────
+function s5(c){
+  const r=S.result,pk=PKS.find(x=>x.id===S.paquete);
+  const cat=LUGAR_CATS.find(c=>c.lugares.some(l=>l.id===S.lugar?.id));
+  // Price shown to client = with IVA (no mention of "sin IVA")
+  const dPiva=S.sharePrice==='intro'?r.pInI:r.pI;
+  const ev=S.lugar?.id==='evento_abierto'||S.lugar?.id==='evento_cerrado';
+
+  c.innerHTML=`<div class="st"><span class="st-n">05</span><span class="st-h">Cotización</span></div>
+  ${S.clientName?`<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border)">
+    <div style="font-size:10px;color:var(--mu2);margin-bottom:2px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Cliente</div>
+    <div style="font-size:15px;font-weight:700;color:var(--tx)">${S.clientName}</div>
+    ${S.clientAddr?`<div style="font-size:11px;color:var(--mu2);margin-top:2px">${S.clientAddr}</div>`:''}
+    ${S.seller?`<div style="font-size:10px;color:var(--mu3);margin-top:4px">Vendedor: <span style="color:var(--y)">${S.seller}</span></div>`:''}
+  </div>`:''}
+
+  ${pk?`<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--mu2)">Paquete:</span>
+    <span style="font-size:13px;font-weight:700;color:${pk.color}">${pk.label}</span>
+    ${cat?`<span style="font-size:10px;color:var(--mu3)">· ${cat.label}</span>`:''}
+    ${S.lugar?.exteriorOnly?`<span style="font-size:9px;color:var(--y2);font-weight:800;background:#1a1a00;padding:2px 6px">SOLO EXTERIOR</span>`:''}
+    ${r.ml.map(m=>`<span style="font-size:9px;color:var(--orange);font-weight:800;background:#1a0e00;padding:2px 6px">${m}</span>`).join('')}
+  </div>`:''}
+
+  <!-- INTERNAL price selector -->
+  <div style="margin-bottom:12px">
+    <div style="font-size:10px;font-weight:800;color:var(--mu2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">Precio a mostrar al cliente</div>
+    <div class="psel">
+      <div class="popt ${S.sharePrice==='standard'?'on':''}" onclick="S.sharePrice='standard';render()">
+        <div class="popt-lbl">Estándar</div>
+        <div class="popt-val">${fmt(r.pI)}</div>
+        <div class="popt-sub">IVA incluido</div>
+      </div>
+      <div class="popt ${S.sharePrice==='intro'?'on':''}" onclick="S.sharePrice='intro';render()">
+        <div class="popt-lbl">Intro (−5%)</div>
+        <div class="popt-val">${fmt(r.pInI)}</div>
+        <div class="popt-sub">IVA incluido · para cerrar</div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--mu3);text-align:center;margin-bottom:2px;font-style:italic">El cliente solo ve el precio final. El IVA ya está incluido.</div>
+  </div>
+
+  <!-- INTERNAL breakdown -->
+  <div class="rbox">
+    <div class="rgrid">
+      <div><div class="rpl">Precio al cliente</div><div class="rpv y">${fmt(dPiva)}</div><div class="rps">IVA incluido</div></div>
+      <div><div class="rpl">Sin IVA (interno)</div><div class="rpv w">${fmt(S.sharePrice==='intro'?r.pIn:r.pD)}</div><div class="rps">referencia interna</div></div>
+    </div>
+    <hr class="rdiv">
+    <div class="rgrid">
+      <div><div class="rpl">Tu utilidad</div><div class="rpv g">${fmt(r.util)}</div><div class="rps">${S.margen}% empresa</div></div>
+      <div><div class="rpl">Mano de obra</div><div class="rpv w">${fmt(r.mano)}</div><div class="rps">10% socios</div></div>
+    </div>
+  </div>
+
+  <div class="cbox">
+    <div class="cbox-hdr" onclick="togAcc('a1')"><span class="cbox-title">Desglose completo de costos</span><span class="cbox-ch" id="a1-i">▼</span></div>
+    <div class="cbox-body" id="a1">
+      <div class="cbox-sec"><div class="cbox-sec-t">▸ Costos directos</div>
+        <div class="crow"><span class="crl">Químicos (${r.litrosInfo})</span><span class="crv" style="color:var(--mu)">${fmt(r.cq)}</span></div>
+        ${S.hormiga?`<div class="crow"><span class="crl">Hormigueros</span><span class="crv" style="color:var(--mu)">$50</span></div>`:''}
+        ${S.trampaMosca?`<div class="crow"><span class="crl">Trampas moscas ×${S.trampaMoscaQty}</span><span class="crv" style="color:var(--mu)">${fmt(S.trampaMoscaQty*200)}</span></div>`:''}
+        ${S.cebaderoRoedor?`<div class="crow"><span class="crl">Cebaderos roedores ×${S.cebaderoQty}</span><span class="crv" style="color:var(--mu)">${fmt(S.cebaderoQty*200)}</span></div>`:''}
+        <div class="crow"><span class="crl">Gasolina + consumibles</span><span class="crv" style="color:var(--mu)">${fmt(r.co)}</span></div>
+        ${S.cert?`<div class="crow"><span class="crl">Certificado COESPRISSON</span><span class="crv" style="color:var(--mu)">$450</span></div>`:''}
+      </div>
+      <div class="cbox-sec"><div class="cbox-sec-t">▸ Distribución priorizada</div>
+        <div class="crow"><span class="crl">① Gastos fijos (renta, etc.)</span><span class="crv" style="color:var(--red)">${fmt(r.cf)}</span></div>
+        <div class="crow"><span class="crl">② Fondo vehículo (8%)</span><span class="crv" style="color:var(--orange)">${fmt(r.fondoCarro)}</span></div>
+        <div class="crow"><span class="crl">③ Reinversión (7%)</span><span class="crv" style="color:var(--blue)">${fmt(r.reinversion)}</span></div>
+        <div class="crow"><span class="crl">④ Mano de obra socios (10%)</span><span class="crv" style="color:var(--y)">${fmt(r.mano)}</span></div>
+        <div class="crow"><span class="crl">⑤ Utilidad empresa (${S.margen}%)</span><span class="crv" style="color:var(--green)">${fmt(r.util)}</span></div>
+        ${r.ml.map(m=>`<div class="crow"><span class="crl">${m}</span><span class="crv" style="color:var(--orange)">aplicado</span></div>`).join('')}
+        ${r.desc>0?`<div class="crow"><span class="crl">Descuento póliza</span><span class="crv" style="color:var(--green)">−${r.desc}%</span></div>`:''}
+        ${S.sharePrice==='intro'?`<div class="crow"><span class="crl">Precio intro</span><span class="crv" style="color:var(--blue)">−5%</span></div>`:''}
+      </div>
+    </div>
+  </div>
+
+  <div class="ibar"><strong>Garantía:</strong> ${r.g}${r.desc>0?`&nbsp;·&nbsp;<span style="color:var(--green)">Póliza −${r.desc}%</span>`:''}</div>
+  ${S.notes?`<div class="ibar" style="border-left-color:var(--mu2)"><strong style="color:var(--mu)">Notas internas:</strong> ${S.notes}</div>`:''}
+  ${ev?`<div class="ibar bl"><strong>Ref. Expogan (ajustado):</strong> ~${fmt(EXPOGAN_REF)} IVA incl. Tu precio (${fmt(dPiva)}) es ${dPiva<EXPOGAN_REF*1.16?'competitivo.':'similar al mercado — justifica con el certificado.'}</div>`:''}
+
+  <button class="cta oy" style="margin-top:14px" onclick="shareQ('single')">📤 &nbsp;Compartir esta cotización</button>
+  <button class="cta ob" style="margin-top:8px" onclick="shareQ('triple')">📊 &nbsp;Enviar los 3 paquetes comparados</button>
+  <button class="cta" onclick="saveAndReset()" style="margin-top:8px">✓ Guardar y nueva cotización</button>
+  <button class="cta sec" onclick="resetQ()">← Cancelar sin guardar</button>`;
+}
+
+window.togAcc=id=>{const b=document.getElementById(id),i=document.getElementById(id+'-i');if(!b)return;const o=b.classList.contains('open');b.classList.toggle('open',!o);if(i)i.classList.toggle('open',!o)};
+
+// ── SHARE — IVA included, no mention of "sin IVA" ────────────────────────────
+function getInc(pkId){
+  const pk=PKS.find(x=>x.id===pkId);
+  const isExt=S.lugar?.id==='hogar_ext';
+  const isH=S.lugar?.id==='hogar'||isExt;
+  return isExt?pk.extInc:(isH?pk.hInc:pk.gInc);
+}
+
+function buildMsg(pkOverride,priceTypeOverride){
+  const pt=priceTypeOverride||S.sharePrice;
+  const pkId=pkOverride||S.paquete;
+  const r=calcFor(null,pkId,S);
+  const pk=PKS.find(x=>x.id===pkId);
+  const inc=getInc(pkId);
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  // Client sees IVA-included price only
+  const dPiva=pt==='intro'?r.pInI:r.pI;
+  const cat=LUGAR_CATS.find(c=>c.lugares.some(l=>l.id===S.lugar?.id));
+  const isExt=S.lugar?.exteriorOnly;
+  const catLabel=cat?.id==='hogar'?'Hogar':cat?.id==='negocio'?'Negocio':cat?.id==='industria'?'Industria':'Evento';
+  const garantiaTxt=pk.id==='basico'?'30 días de respaldo total':pk.id==='completo'?'90 días + visita de refuerzo a los 30 días':'90 días + refuerzo + atención SOS prioritaria';
+
+  // Closing block varies by package
+  const closingExtra = pk.id==='completo'
+    ? `\n🔬 *Tecnología iCAP:* Mientras otros aplican insecticidas comunes, nosotros usamos microcápsulas de liberación prolongada que trabajan por ti 24/7, sin que lo notes.`
+    : pk.id==='premium'
+    ? `\n🔬 *Tecnología iCAP:* Microcápsulas de liberación prolongada activas 24/7.\n🌿 *Protocolo de Purificación y Sello Olfativo:* Tratamiento con ozono que elimina olores residuales y deja un ambiente completamente sanitizado.`
+    : '';
+
+  return `*PLAGAWAY* · Especialistas en Bioseguridad 🦟
+_Certificación Federal COFEPRIS · COESPRISSON · Hermosillo, Son._
+━━━━━━━━━━━━━━━━━━━
+
+🏅 *PROPUESTA DE PROTECCIÓN${isExt?' EXTERIOR':''}: ${pk.label.toUpperCase()}*
+${S.clientName?`Preparada para: *${S.clientName}*\n`:''}${S.clientAddr?`📍 ${S.clientAddr}\n`:''}Fecha: ${fecha}
+
+La tranquilidad de ${catLabel==='Hogar'?'tu familia':catLabel==='Negocio'?'tu negocio y tus clientes':'tu operación'} no es un gasto, es una prioridad. Este es el protocolo diseñado para ti:
+
+✅ *¿QUÉ INCLUYE TU SERVICIO?*
+${inc.map(i=>`▸ ${i}`).join('\n')}
+${S.cert?'▸ Certificado de inocuidad COESPRISSON (cumplimiento sanitario oficial)':''}
+${S.trampaMosca?`▸ ${S.trampaMoscaQty} trampa${S.trampaMoscaQty>1?'s':''} profesional${S.trampaMoscaQty>1?'es':''} para moscas`:''}
+${S.cebaderoRoedor?`▸ ${S.cebaderoQty} cebadero${S.cebaderoQty>1?'s':''} para control de roedores`:''}
+
+━━━━━━━━━━━━━━━━━━━
+💰 *INVERSIÓN EN TRANQUILIDAD*
+
+*${fmt(dPiva)}*
+_(Precio final, impuestos incluidos)_
+${r.desc>0?`\n🎁 Descuento por contrato: ${r.desc}%`:''}
+
+🛡️ *Garantía:* ${garantiaTxt}
+
+━━━━━━━━━━━━━━━━━━━
+🏅 *Más que una fumigación, un blindaje.*
+
+Aplicamos en tu${catLabel==='Hogar'?' hogar':' espacio'} los mismos estándares que COFEPRIS exige a las grandes empresas. Protocolos de alto nivel, sin improvisaciones.${closingExtra}
+
+💬 *Soporte Express:* Como cliente Plagaway tienes una línea directa con expertos. Identificamos cualquier insecto por foto al instante, sin costo adicional.
+
+🌿 *Higiene garantizada:* Trabajamos con productos de Banda Verde — baja toxicidad, certificados y seguros para tu familia${catLabel==='Hogar'?' y mascotas':''}.
+
+_¿Tienes preguntas? Responde este mensaje, con gusto te asesoramos._ 🦟
+_"Control total, vida tranquila"_`.trim().replace(/\n{3,}/g,'\n\n');
+}
+
+function buildTripleMsg(){
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  const isExt=S.lugar?.id==='hogar_ext';
+  const rB=calcFor(null,'basico',S),rC=calcFor(null,'completo',S),rP=calcFor(null,'premium',S);
+  const incB=getInc('basico'),incC=getInc('completo'),incP=getInc('premium');
+  const pt=S.sharePrice;
+  const dIB=pt==='intro'?rB.pInI:rB.pI, dIC=pt==='intro'?rC.pInI:rC.pI, dIP=pt==='intro'?rP.pInI:rP.pI;
+
+  return `*PLAGAWAY* · Especialistas en Bioseguridad 🦟
+_Certificación Federal COFEPRIS · COESPRISSON · Hermosillo, Son._
+━━━━━━━━━━━━━━━━━━━
+
+📊 *COMPARATIVA DE PAQUETES*
+${S.clientName?`Para: *${S.clientName}*\n`:''}${S.clientAddr?`📍 ${S.clientAddr}\n`:''}Fecha: ${fecha}
+${isExt?'Modalidad: Solo Exterior\n':''}
+Hemos preparado *3 opciones* para que elijas la protección que se adapta a tu caso:
+
+━━━━━━━━━━━━━━━━━━━
+1️⃣ *${PKS[0].label}* — ${PKS[0].tagline}
+
+${incB.map(i=>`▸ ${i}`).join('\n')}
+
+💰 *${fmt(dIB)}* (impuestos incluidos)
+🛡️ Garantía: 30 días
+
+━━━━━━━━━━━━━━━━━━━
+2️⃣ ⭐ *${PKS[1].label}* — ${PKS[1].tagline}
+_(El más elegido por nuestros clientes)_
+
+${incC.map(i=>`▸ ${i}`).join('\n')}
+
+💰 *${fmt(dIC)}* (impuestos incluidos)
+🛡️ Garantía: 90 días + refuerzo a los 30 días
+
+━━━━━━━━━━━━━━━━━━━
+3️⃣ 👑 *${PKS[2].label}* — ${PKS[2].tagline}
+
+${incP.map(i=>`▸ ${i}`).join('\n')}
+
+💰 *${fmt(dIP)}* (impuestos incluidos)
+🛡️ Garantía: 90 días + refuerzo + atención SOS prioritaria
+
+━━━━━━━━━━━━━━━━━━━
+🏅 *¿Por qué Plagaway?*
+▸ Licencia sanitaria COFEPRIS vigente
+▸ Protocolos de alto nivel, sin improvisaciones
+▸ Productos de Banda Verde — seguros para tu familia
+▸ Tecnología iCAP: microcápsulas activas 24/7
+▸ Soporte Express: identificamos cualquier insecto por foto al instante
+
+_¿Tienes preguntas? Responde este mensaje, con gusto te asesoramos._ 🦟
+_"Control total, vida tranquila"_`.trim().replace(/\n{3,}/g,'\n\n');
+}
+
+function shareQ(mode){
+  const txt=mode==='triple'?buildTripleMsg():buildMsg();
+  if(navigator.share)navigator.share({text:txt}).catch(()=>copyClip(txt));else copyClip(txt);
+}
+function copyClip(t){navigator.clipboard.writeText(t).then(()=>toast('Cotización copiada ✓')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Cotización copiada ✓')})}
+function toast(msg){const t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--y);color:#0d0d0d;padding:10px 20px;font-weight:900;font-size:12px;letter-spacing:.1em;z-index:999;white-space:nowrap';document.body.appendChild(t);setTimeout(()=>t.remove(),2500)}
+
+// ── SAVE / RESET ──────────────────────────────────────────────────────────────
+async function saveAndReset(){
+  const r=S.result,pk=PKS.find(x=>x.id===S.paquete),cat=LUGAR_CATS.find(c=>c.lugares.some(l=>l.id===S.lugar?.id));
+  await addHistEntry({clientName:S.clientName||'Sin nombre',clientAddr:S.clientAddr,cat:cat?.label||'',plaga:PLAGAS[S.plaga]?.label||'',paquete:pk?.label||'',precio:S.sharePrice==='intro'?r.pInI:r.pI,priceType:S.sharePrice,seller:S.seller,notes:S.notes,exteriorOnly:S.lugar?.exteriorOnly||false});
+  toast('Guardado ✓');resetQ();
+}
+function resetQ(){S=iS();render()}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+function rHist(c){
+  window._histCallback=entries=>{if(tab===1)rHist(document.getElementById('cnt'))};
+  const allH=getHist(),sellers=['Todos',...getSellers()],ss=db.get('pw_hs')||'Todos',sq=db.get('pw_hq')||'';
+  let h=allH;if(ss!=='Todos')h=h.filter(x=>x.seller===ss);if(sq)h=h.filter(x=>(x.clientName+x.clientAddr+x.plaga+x.paquete+x.seller).toLowerCase().includes(sq.toLowerCase()));
+  c.innerHTML=`<div class="st"><span class="st-n">📋</span><span class="st-h">Historial</span></div>
+  <div class="s-row">
+    <input class="s-inp" placeholder="Buscar cliente, plaga..." value="${sq}" oninput="db.set('pw_hq',this.value);rHist(document.getElementById('cnt'))">
+    <select class="s-sel" onchange="db.set('pw_hs',this.value);rHist(document.getElementById('cnt'))">
+      ${sellers.map(s=>`<option value="${s}" ${ss===s?'selected':''}>${s}</option>`).join('')}
+    </select>
+  </div>
+  ${h.length===0?`<div style="text-align:center;padding:50px 20px;color:var(--mu3)"><div style="font-size:36px;margin-bottom:12px">📋</div><div style="font-size:13px">Sin cotizaciones${sq||ss!=='Todos'?' que coincidan.':' guardadas.'}</div></div>`
+  :h.map(item=>`<div class="hist-item">
+    <div class="hist-top">
+      <div><div class="hist-name">${item.clientName}</div>
+      <div class="hist-meta">${item.date} · ${item.cat||''} · ${item.plaga||''}</div>
+      ${item.paquete?`<div style="font-size:10px;color:var(--y);margin-top:2px">${item.paquete}${item.exteriorOnly?' · <span style="color:var(--y2)">Exterior</span>':''}</div>`:''}
+      ${item.seller?`<div style="font-size:10px;color:var(--mu3);margin-top:2px">Vendedor: ${item.seller}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <div><div class="hist-price">${fmt(item.precio)}</div><div style="font-size:9px;color:var(--mu3);text-align:right">IVA incl.</div></div>
+        ${isAdmin()?`<button class="hist-del" onclick="doDelH('${item._id||item.id}')">✕</button>`:''}
+      </div>
+    </div>
+    ${item.clientAddr?`<div style="font-size:10px;color:var(--mu3);margin-top:4px">${item.clientAddr}</div>`:''}
+    ${item.notes?`<div style="font-size:10px;color:var(--mu3);margin-top:2px;font-style:italic">${item.notes}</div>`:''}
+  </div>`).join('')}
+  ${allH.length>0&&isAdmin()?`<button class="cta sec" style="margin-top:8px" onclick="if(confirm('¿Borrar todo el historial?')){saveHist([]);db.set('pw_hq','');db.set('pw_hs','Todos');rHist(document.getElementById('cnt'))}">Borrar historial completo</button>`:''}`;
+}
+window.doDelH=async id=>{await delHistEntry(id);rHist(document.getElementById('cnt'))};
+
+// ── CHEMICALS (Admin only) ────────────────────────────────────────────────────
+function rChems(c){
+  if(!isAdmin()){c.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--mu3)"><div style="font-size:36px">🔒</div><div style="margin-top:12px;font-size:13px">Acceso restringido a Admin</div></div>`;return}
+  const chems=getChems();
+  c.innerHTML=`<div class="st"><span class="st-n">⚗️</span><span class="st-h">Químicos</span></div>
+  <div style="margin-bottom:16px">${chems.map((ch,i)=>`<div class="chem-item"><div><div style="font-size:13px;font-weight:600;color:var(--tx)">${ch.name}</div><div style="font-size:11px;color:var(--mu)">$${ch.price}/litro</div></div><button class="chem-del" onclick="delCh(${i})">✕</button></div>`).join('')}</div>
+  <span class="lbl">Agregar químico</span>
+  <div class="add-row"><input class="inp-text" id="chN" placeholder="Nombre del producto"><input class="inp-num" id="chP" placeholder="$/L" type="number" step="0.01" inputmode="decimal"><button class="btn-add" onclick="addCh()">+</button></div>
+  <div style="font-size:10px;color:var(--mu3);margin-top:8px">Cambios sincronizados en todos los dispositivos.</div>`;
+}
+window.addCh=async()=>{const n=document.getElementById('chN').value.trim(),p=parseFloat(document.getElementById('chP').value);if(!n||!p||p<=0){toast('Completa nombre y precio');return}const c=getChems();c.push({id:'c'+Date.now(),name:n,price:p});await saveChems(c);rChems(document.getElementById('cnt'))};
+window.delCh=async i=>{const c=getChems();if(c.length<=1){toast('Debe haber al menos un químico');return}c.splice(i,1);await saveChems(c);rChems(document.getElementById('cnt'))};
+
+// ── SELLERS (Admin only) ──────────────────────────────────────────────────────
+function rSellers(c){
+  if(!isAdmin()){c.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--mu3)"><div style="font-size:36px">🔒</div><div style="margin-top:12px;font-size:13px">Acceso restringido a Admin</div></div>`;return}
+  const sellers=getSellers(),hist=getHist();
+  c.innerHTML=`<div class="st"><span class="st-n">👤</span><span class="st-h">Equipo de ventas</span></div>
+  <div style="margin-bottom:16px">${sellers.map((s,i)=>`<div class="chem-item"><div style="font-size:13px;font-weight:700;color:var(--tx)">${s}</div><button class="chem-del" onclick="delSel(${i})">✕</button></div>`).join('')}</div>
+  <span class="lbl">Agregar vendedor</span>
+  <div class="add-row"><input class="inp-text" id="sN" placeholder="Nombre del vendedor"><div></div><button class="btn-add" onclick="addSel()">+</button></div>
+  <div style="font-size:10px;color:var(--mu3);margin-top:8px;margin-bottom:24px">Cambios sincronizados en todos los dispositivos.</div>
+  <span class="lbl">Resumen por vendedor</span>
+  ${sellers.map(s=>{const h=hist.filter(x=>x.seller===s),tot=h.reduce((a,x)=>a+x.precio,0);return`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-size:13px;font-weight:700;color:var(--tx)">${s}</div><div style="font-size:10px;color:var(--mu2)">${h.length} cotización${h.length!==1?'es':''}</div></div><div style="font-size:15px;font-weight:700;color:var(--y)">${h.length?fmt(tot):'—'}</div></div>`}).join('')}
+  <div style="margin-top:20px"><button class="cta sec" onclick="showCfg()">⚙️ Gestionar PINs de acceso</button></div>`;
+}
+window.addSel=async()=>{const n=document.getElementById('sN').value.trim();if(!n){toast('Escribe un nombre');return}const s=getSellers();if(s.includes(n)){toast('Ya existe');return}s.push(n);await saveSellers(s);rSellers(document.getElementById('cnt'))};
+window.delSel=async i=>{const s=getSellers();if(s.length<=1){toast('Debe haber al menos un vendedor');return}s.splice(i,1);await saveSellers(s);rSellers(document.getElementById('cnt'))};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+renderPin('unlock');
+</script>
+</body>
+</html>
