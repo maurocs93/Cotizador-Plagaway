@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Plagaway · Reportes</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0d0d0d;--bg2:#141414;--bg3:#1c1c1c;--border:#272727;--border2:#1e1e1e;
+  --y:#f5c800;--y2:#c9a200;--y3:#7a6100;--y4:#1a1600;
+  --tx:#f5f0e8;--tx2:#c8c0b0;--mu:#888880;--mu2:#555550;--mu3:#333330;
+  --red:#ff4444;--blue:#4ac8f0;--green:#72c040;--orange:#ff8844}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Helvetica Neue',Arial,sans-serif;overscroll-behavior:none;font-size:15px}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hdr{padding:13px 18px 10px;border-bottom:2px solid var(--y3);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg);z-index:20}
+.logo-wm{font-size:22px;font-weight:900;color:var(--tx);letter-spacing:-1px;line-height:1}.logo-wm b{color:var(--y)}
+.logo-pill{background:var(--y);color:#0d0d0d;font-size:7px;font-weight:900;letter-spacing:.15em;padding:3px 6px;text-transform:uppercase;align-self:flex-start;margin-top:2px}
+.hdr-row{display:flex;align-items:center;gap:8px}
+.hdr-sub{font-size:9px;color:var(--mu2);margin-top:4px}
+.hdr-right{display:flex;gap:7px;align-items:center;margin-top:2px}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--mu);padding:7px 11px;font-size:9px;font-weight:700;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;font-family:inherit}
+.cnt{padding:18px 18px 40px;flex:1}
+.fade{animation:fu .22s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.st{margin-bottom:16px;display:flex;align-items:baseline;gap:10px}
+.st-n{font-size:10px;font-weight:900;color:#0d0d0d;background:var(--y);padding:3px 7px;letter-spacing:.1em;flex-shrink:0}
+.st-h{font-size:18px;font-weight:700;color:var(--tx)}
+.lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.blk{margin-bottom:18px}
+.inp{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:100%}
+.inp:focus{border-color:var(--y)}
+.sel{background:var(--bg2);border:1px solid var(--border);color:var(--tx);padding:10px 12px;font-family:inherit;font-size:13px;outline:none;width:100%;cursor:pointer}
+.cta{width:100%;background:var(--y);color:#0d0d0d;border:none;padding:15px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-family:inherit;font-weight:900;cursor:pointer;margin-top:10px;transition:opacity .15s}
+.cta:active{opacity:.85}
+.cta.sec{background:transparent;border:1px solid var(--border);color:var(--mu);font-weight:700}
+.cta.oy{background:transparent;border:2px solid var(--y);color:var(--y);font-weight:900}
+.cta.ob{background:transparent;border:2px solid var(--blue);color:var(--blue);font-weight:900}
+.card{background:var(--bg2);border:1px solid var(--border);padding:13px 14px;margin-bottom:7px;cursor:pointer;transition:all .12s;text-align:left;width:100%;font-family:inherit}
+.card:active{transform:scale(.98)}.card.on{background:var(--y4);border-color:var(--y)}
+.ct{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:3px}.cs{font-size:10px;color:var(--mu2)}
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.kpi{background:var(--bg2);border:1px solid var(--border);padding:14px;text-align:center}
+.kpi-val{font-size:22px;font-weight:700;color:var(--y);margin-bottom:3px}
+.kpi-lbl{font-size:9px;font-weight:700;color:var(--mu2);letter-spacing:.1em;text-transform:uppercase}
+.kpi-sub{font-size:10px;color:var(--mu3);margin-top:3px}
+.kpi.gr .kpi-val{color:var(--green)}
+.kpi.bl .kpi-val{color:var(--blue)}
+.kpi.rd .kpi-val{color:var(--red)}
+.kpi.or .kpi-val{color:var(--orange)}
+/* Tab bar */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{flex:1;padding:10px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--mu2);font-family:inherit;border-bottom:2px solid transparent;transition:all .2s}
+.tab.act{color:var(--y);border-bottom-color:var(--y)}
+/* Filters */
+.filters{background:var(--bg3);border:1px solid var(--border);padding:12px;margin-bottom:14px}
+.filters-title{font-size:9px;font-weight:800;color:var(--mu2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+.filter-row{display:flex;gap:7px;margin-bottom:7px}
+.filter-row:last-child{margin-bottom:0}
+/* Table */
+.tbl-wrap{overflow-x:auto;margin-bottom:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:10px}
+.tbl th{background:var(--bg3);color:var(--mu2);font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border:1px solid var(--border);white-space:nowrap;text-align:left}
+.tbl td{padding:8px 10px;border:1px solid var(--border2);color:var(--tx2);vertical-align:top}
+.tbl tr:nth-child(even) td{background:var(--bg2)}
+.tbl tr:hover td{background:var(--y4)}
+.tbl .total-row td{background:var(--bg3);font-weight:700;color:var(--tx);border-top:2px solid var(--y3)}
+/* Paquete bar chart */
+.pk-bar-wrap{background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:10px}
+.pk-bar-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.pk-bar-name{font-size:13px;font-weight:700;color:var(--tx)}
+.pk-bar-count{font-size:10px;color:var(--mu2)}
+.bar-track{background:var(--border);height:6px;border-radius:3px;margin-bottom:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.pk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pk-stat{text-align:center}
+.pk-stat-val{font-size:14px;font-weight:700}
+.pk-stat-lbl{font-size:8px;color:var(--mu3);text-transform:uppercase;letter-spacing:.08em}
+/* Margin badge */
+.margin-badge{display:inline-block;font-size:9px;font-weight:900;padding:2px 8px;letter-spacing:.08em;border-radius:2px}
+.mb-ok{background:var(--bg3);color:var(--green);border:1px solid var(--green)}
+.mb-warn{background:#1a1000;color:var(--orange);border:1px solid var(--orange)}
+.mb-crit{background:#1a0000;color:var(--red);border:1px solid var(--red)}
+/* Status badge */
+.sbadge{display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;letter-spacing:.06em;text-transform:uppercase;border-radius:2px;border:1px solid}
+.sb-borrador{background:#111;color:var(--mu);border-color:var(--border)}
+.sb-enviada{background:#001a2e;color:var(--blue);border-color:var(--blue)}
+.sb-aprobada{background:#001a0a;color:var(--green);border-color:var(--green)}
+.sb-rechazada{background:#1a0000;color:var(--red);border-color:var(--red)}
+/* ibar */
+.ibar{padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--y);font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.5}
+.ibar strong{color:var(--y)}.ibar.gr{border-left-color:var(--green)}.ibar.gr strong{color:var(--green)}
+.ibar.rd{border-left-color:var(--red)}.ibar.rd strong{color:var(--red)}
+/* PIN */
+.pin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:40px 20px;gap:20px}
+.pin-logo{font-size:30px;font-weight:900;color:var(--tx);letter-spacing:-1px}.pin-logo b{color:var(--y)}
+.pin-dots{display:flex;gap:14px}
+.pin-dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
+.pin-dot.filled{background:var(--y);border-color:var(--y)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:240px}
+.pin-key{background:var(--bg2);border:1px solid var(--border);color:var(--tx);font-size:20px;font-weight:600;padding:17px;cursor:pointer;font-family:inherit;transition:all .12s;border-radius:50%}
+.pin-key:active{background:var(--y);color:#0d0d0d;transform:scale(.93)}
+.pin-err{color:var(--red);font-size:11px;font-weight:700;min-height:16px;text-transform:uppercase;text-align:center}
+.sync-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Empty state */
+.empty{text-align:center;padding:50px 20px;color:var(--mu3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:14px;font-weight:700;color:var(--mu2);margin-bottom:6px}
+.empty-sub{font-size:11px}
+/* Section divider */
+.sec-hdr{font-size:9px;font-weight:800;color:var(--mu3);letter-spacing:.15em;text-transform:uppercase;padding:8px 0;border-bottom:1px solid var(--border2);margin-bottom:10px}
+</style>
+</head>
+<body>
+<div id="pin-screen"></div>
+<div id="app" style="display:none;flex-direction:column">
+  <div class="hdr">
+    <div>
+      <div class="hdr-row"><div class="logo-wm">PLAGA<b>W</b>AY</div><div class="logo-pill">Reportes</div></div>
+      <div class="hdr-sub" id="cs">Cargando...</div>
+    </div>
+    <div class="hdr-right">
+      <button class="btn-sm" onclick="try{window.close()}catch(e){window.location.href='index.html'}">← App</button>
+    </div>
+  </div>
+  <div class="cnt fade" id="cnt"></div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getFirestore,doc,onSnapshot,collection,query,orderBy}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const CFG={apiKey:"AIzaSyCGz0t2xfeiMxYIcgVVQTp0bCHY6scIR_w",authDomain:"calculadora-plagaway.firebaseapp.com",projectId:"calculadora-plagaway",storageBucket:"calculadora-plagaway.firebasestorage.app",messagingSenderId:"257562908832",appId:"1:257562908832:web:14f673952eabba313c51c5"};
+const fbApp=getApps().length===0?initializeApp(CFG):getApps()[0];
+const fs=getFirestore(fbApp);
+onSnapshot(query(collection(fs,'history'),orderBy('ts','desc')),snap=>{
+  window._hist=snap.docs.map(d=>({...d.data(),_id:d.id}));
+  window._histReady=true;
+  if(window._pendingRender)window._pendingRender();
+  else if(window._currentView)renderCurrent();
+});
+onSnapshot(doc(fs,'config/shared'),snap=>{
+  if(!snap.exists())return;
+  const d=snap.data();
+  if(d.adminPin)window._apin=d.adminPin;
+  if(d.empresa)window._empresa=d.empresa;
+  if(d.sellers)window._sellers=d.sellers;
+});
+document.getElementById('cs').innerHTML='<span class="sync-dot" style="background:var(--green)"></span>Solo Admin · Sincronizado';
+setTimeout(()=>{if(!window._pinDone)tryPin()},1200);
+</script>
+
+<script>
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-MX');
+const fmtD=ts=>new Date(ts).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'2-digit'});
+const pct=n=>Math.round(n*100)+'%';
+const ROLE_KEY='pw_rep_role_v8';
+const ESTADO_CLS={Borrador:'sb-borrador',Enviada:'sb-enviada',Aprobada:'sb-aprobada',Rechazada:'sb-rechazada'};
+const PK_COLORS={basico:'#888880',completo:'#f5c800',premium:'#4ac8f0'};
+const PK_IDS={
+  'Hogar Seguro':'basico','Blindaje Total':'completo','Blindaje Élite':'premium',
+  'basico':'basico','completo':'completo','premium':'premium'
+};
+
+function getHist(){return window._hist||[]}
+function getEmp(){return{nombre:'PLAGAWAY, Control de Plagas',tel:'(662) 443 3211',...(window._empresa||{})}}
+function getSellers(){return window._sellers||[]}
+
+// ── PIN ───────────────────────────────────────────────────────────────────────
+function tryPin(){
+  const saved=localStorage.getItem(ROLE_KEY);
+  if(saved==='admin'){window._pinRole='admin';window._pinDone=true;showApp();return}
+  showPin();
+}
+function showPin(){
+  const ps=document.getElementById('pin-screen');
+  document.getElementById('app').style.display='none';
+  ps.style.cssText='display:flex;flex-direction:column;min-height:100vh';
+  let buf='';
+  function draw(err=''){
+    ps.innerHTML=`<div class="pin-wrap">
+      <div class="pin-logo">PLAGA<b>W</b>AY</div>
+      <div style="font-size:11px;color:var(--mu2);letter-spacing:.1em;text-transform:uppercase">Reportes · Solo Admin</div>
+      <div class="pin-dots">${[0,1,2,3].map(i=>`<div class="pin-dot ${buf.length>i?'filled':''}"></div>`).join('')}</div>
+      <div class="pin-err">${err}</div>
+      <div class="pin-pad">${[1,2,3,4,5,6,7,8,9,'','0','⌫'].map(k=>`<button class="pin-key" data-k="${k}" style="${k===''?'visibility:hidden':''}">${k}</button>`).join('')}</div>
+    </div>`;
+    ps.querySelectorAll('.pin-key').forEach(btn=>{
+      btn.onclick=()=>{
+        const k=btn.dataset.k;
+        if(k==='⌫'){buf=buf.slice(0,-1);draw();return}
+        if(buf.length>=4)return;
+        buf+=k;draw();
+        if(buf.length===4)setTimeout(()=>{
+          if(buf===(window._apin||'1234')){
+            window._pinRole='admin';window._pinDone=true;
+            localStorage.setItem(ROLE_KEY,'admin');
+            ps.style.display='none';showApp();
+          }else{buf='';draw('PIN INCORRECTO')}
+        },120);
+      };
+    });
+  }
+  draw();
+}
+function showApp(){
+  const app=document.getElementById('app');
+  app.style.display='flex';app.style.flexDirection='column';
+  if(window._histReady)showHome();
+  else window._pendingRender=showHome;
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentView='home',activeTab=0;
+// Filters
+let F={periodo:'mes',fechaIni:'',fechaFin:'',seller:'Todos',estado:'Todos',paquete:'Todos'};
+
+function renderCurrent(){
+  if(currentView==='home')showHome();
+  else if(currentView==='historial')showHistorial();
+  else if(currentView==='rentabilidad')showRentabilidad();
+}
+
+function cnt(){return document.getElementById('cnt')}
+function setCnt(html){const c=cnt();c.className='cnt fade';void c.offsetWidth;c.innerHTML=html}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────────
+function getDateRange(){
+  const now=new Date(),y=now.getFullYear(),m=now.getMonth();
+  if(F.periodo==='hoy'){const d=new Date(y,m,now.getDate());return[d.getTime(),now.getTime()]}
+  if(F.periodo==='semana'){const d=new Date(now);d.setDate(now.getDate()-7);return[d.getTime(),now.getTime()]}
+  if(F.periodo==='mes'){return[new Date(y,m,1).getTime(),now.getTime()]}
+  if(F.periodo==='mes_ant'){return[new Date(y,m-1,1).getTime(),new Date(y,m,1).getTime()]}
+  if(F.periodo==='trimestre'){return[new Date(y,m-2,1).getTime(),now.getTime()]}
+  if(F.periodo==='anio'){return[new Date(y,0,1).getTime(),now.getTime()]}
+  if(F.periodo==='custom'&&F.fechaIni&&F.fechaFin){
+    return[new Date(F.fechaIni).getTime(),new Date(F.fechaFin+'T23:59:59').getTime()]}
+  return[new Date(y,m,1).getTime(),now.getTime()];
+}
+
+function applyFilters(data){
+  const [t0,t1]=getDateRange();
+  return data.filter(h=>{
+    if(h.ts<t0||h.ts>t1)return false;
+    if(F.seller!=='Todos'&&h.seller!==F.seller)return false;
+    if(F.estado!=='Todos'&&(h.estado||'Borrador')!==F.estado)return false;
+    if(F.paquete!=='Todos'&&!h.paquete?.includes(F.paquete))return false;
+    return true;
+  });
+}
+
+function periodoLabel(){
+  const MAP={hoy:'Hoy',semana:'Últimos 7 días',mes:'Este mes',mes_ant:'Mes anterior',trimestre:'Últimos 3 meses',anio:'Este año',custom:'Período personalizado'};
+  return MAP[F.periodo]||F.periodo;
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+function showHome(){
+  currentView='home';
+  const hist=getHist(),filtered=applyFilters(hist);
+  const aprobadas=filtered.filter(h=>h.estado==='Aprobada');
+  const totalVendido=aprobadas.reduce((a,h)=>a+(h.precio||0),0);
+  const totalCotizado=filtered.reduce((a,h)=>a+(h.precio||0),0);
+  const tasaCierre=filtered.length?aprobadas.length/filtered.length:0;
+  const ticketProm=aprobadas.length?totalVendido/aprobadas.length:0;
+  const utilidadTotal=aprobadas.reduce((a,h)=>a+(h.utilidad||0),0);
+
+  setCnt(`
+  <div class="st"><span class="st-n">📊</span><span class="st-h">Reportes</span></div>
+  <!-- Period selector -->
+  <div class="filters">
+    <div class="filters-title">Período de análisis</div>
+    <div class="filter-row">
+      <select class="sel" id="sel-periodo" style="flex:1">
+        ${['hoy','semana','mes','mes_ant','trimestre','anio','custom'].map(p=>`<option value="${p}" ${F.periodo===p?'selected':''}>${{hoy:'Hoy',semana:'7 días',mes:'Este mes',mes_ant:'Mes anterior',trimestre:'3 meses',anio:'Este año',custom:'Personalizado'}[p]}</option>`).join('')}
+      </select>
+      <select class="sel" id="sel-seller" style="flex:1">
+        <option value="Todos">Todos los vendedores</option>
+        ${getSellers().map(s=>`<option value="${s}" ${F.seller===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    ${F.periodo==='custom'?`<div class="filter-row">
+      <input class="inp" type="date" id="fi" value="${F.fechaIni}" style="flex:1">
+      <input class="inp" type="date" id="ff" value="${F.fechaFin}" style="flex:1">
+    </div>`:''}
+    <div style="font-size:10px;color:var(--mu3);margin-top:5px">Mostrando: <strong style="color:var(--y)">${periodoLabel()}</strong> · ${filtered.length} cotizaciones</div>
+  </div>
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi gr"><div class="kpi-val">${fmt(totalVendido)}</div><div class="kpi-lbl">Vendido</div><div class="kpi-sub">${aprobadas.length} aprobadas</div></div>
+    <div class="kpi"><div class="kpi-val">${fmt(totalCotizado)}</div><div class="kpi-lbl">Cotizado</div><div class="kpi-sub">${filtered.length} cotizaciones</div></div>
+    <div class="kpi ${tasaCierre>=0.5?'gr':tasaCierre>=0.3?'or':'rd'}"><div class="kpi-val">${pct(tasaCierre)}</div><div class="kpi-lbl">Tasa de cierre</div><div class="kpi-sub">${aprobadas.length}/${filtered.length}</div></div>
+    <div class="kpi bl"><div class="kpi-val">${fmt(ticketProm)}</div><div class="kpi-lbl">Ticket promedio</div><div class="kpi-sub">servicios aprobados</div></div>
+  </div>
+  ${utilidadTotal>0?`<div class="kpi-grid">
+    <div class="kpi gr" style="grid-column:1/-1"><div class="kpi-val">${fmt(utilidadTotal)}</div><div class="kpi-lbl">Utilidad empresa acumulada (aprobadas)</div><div class="kpi-sub">Campo utilidad guardado en Firebase por cotización</div></div>
+  </div>`:''}
+  <!-- Report buttons -->
+  <span class="lbl">Generar reporte</span>
+  <button class="card" id="btn-hist"><div class="ct">📋 Historial de cotizaciones</div><div class="cs">Tabla completa con filtros · exportar a PDF</div></button>
+  <button class="card" id="btn-rent"><div class="ct">💰 Rentabilidad por paquete</div><div class="cs">Básico / Completo / Élite · margen real · alertas</div></button>
+  <button class="card" id="btn-seller"><div class="ct">👤 Desempeño por vendedor</div><div class="cs">Cotizaciones, cierre y ticket promedio por vendedor</div></button>
+  `);
+
+  document.getElementById('sel-periodo').onchange=e=>{F.periodo=e.target.value;showHome()};
+  document.getElementById('sel-seller').onchange=e=>{F.seller=e.target.value;showHome()};
+  if(F.periodo==='custom'){
+    document.getElementById('fi').onchange=e=>{F.fechaIni=e.target.value;showHome()};
+    document.getElementById('ff').onchange=e=>{F.fechaFin=e.target.value;showHome()};
+  }
+  document.getElementById('btn-hist').onclick=showHistorial;
+  document.getElementById('btn-rent').onclick=showRentabilidad;
+  document.getElementById('btn-seller').onclick=showVendedores;
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────────────────────────
+function showHistorial(){
+  currentView='historial';
+  const filtered=applyFilters(getHist());
+  const totalPrecio=filtered.reduce((a,h)=>a+(h.precio||0),0);
+  const totalUtil=filtered.reduce((a,h)=>a+(h.utilidad||0),0);
+
+  setCnt(`
+  <button class="btn-sm" id="btn-back" style="margin-bottom:14px">← Volver</button>
+  <div class="st"><span class="st-n">📋</span><span class="st-h">Historial</span></div>
+  <!-- Filtros adicionales -->
+  <div class="filters">
+    <div class="filters-title">Filtros del reporte</div>
+    <div class="filter-row">
+      <select class="sel" id="f-estado" style="flex:1">
+        ${['Todos','Borrador','Enviada','Aprobada','Rechazada'].map(e=>`<option value="${e}" ${F.estado===e?'selected':''}>${e}</option>`).join('')}
+      </select>
+      <select class="sel" id="f-paquete" style="flex:1">
+        <option value="Todos">Todos los paquetes</option>
+        ${['Hogar Seguro','Blindaje Total','Blindaje Élite'].map(p=>`<option value="${p}" ${F.paquete===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>
+    <div style="font-size:10px;color:var(--mu3);margin-top:5px">${periodoLabel()} · ${filtered.length} registros</div>
+  </div>
+  <!-- Summary -->
+  <div class="kpi-grid" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-val">${fmt(totalPrecio)}</div><div class="kpi-lbl">Total cotizado</div></div>
+    <div class="kpi gr"><div class="kpi-val">${fmt(filtered.filter(h=>h.estado==='Aprobada').reduce((a,h)=>a+(h.precio||0),0))}</div><div class="kpi-lbl">Total aprobado</div></div>
+  </div>
+  <!-- Table -->
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr>
+        <th>Fecha</th><th>Cliente</th><th>Paquete</th><th>Plaga</th><th>Precio</th><th>Estado</th><th>Vendedor</th>
+      </tr></thead>
+      <tbody>
+        ${filtered.length===0?`<tr><td colspan="7" style="text-align:center;color:var(--mu3);padding:20px">Sin registros en este período</td></tr>`
+        :filtered.map(h=>`<tr>
+          <td style="white-space:nowrap">${fmtD(h.ts)}</td>
+          <td><div style="font-weight:600;color:var(--tx)">${h.clientName||'—'}</div>${h.clientAddr?`<div style="font-size:9px;color:var(--mu3);margin-top:1px">${h.clientAddr.slice(0,30)}${h.clientAddr.length>30?'…':''}</div>`:''}</td>
+          <td style="white-space:nowrap;color:${getPkColor(h.paquete)}">${h.paquete||'—'}</td>
+          <td style="font-size:9px">${h.plaga||'—'}</td>
+          <td style="font-weight:700;color:var(--y);white-space:nowrap">${fmt(h.precio||0)}</td>
+          <td><span class="sbadge ${ESTADO_CLS[h.estado||'Borrador']}">${h.estado||'Borrador'}</span></td>
+          <td style="font-size:9px;color:var(--mu2)">${h.seller||'—'}</td>
+        </tr>`).join('')}
+        ${filtered.length>0?`<tr class="total-row">
+          <td colspan="4" style="text-align:right;font-size:9px;color:var(--mu2)">TOTAL (${filtered.length} registros)</td>
+          <td style="color:var(--y)">${fmt(totalPrecio)}</td><td colspan="2"></td>
+        </tr>`:''}
+      </tbody>
+    </table>
+  </div>
+  <button class="cta oy" id="btn-pdf-hist">📄 Exportar a PDF</button>
+  <button class="cta sec" id="btn-back2">← Volver al inicio</button>
+  `);
+
+  document.getElementById('btn-back').onclick=showHome;
+  document.getElementById('btn-back2').onclick=showHome;
+  document.getElementById('f-estado').onchange=e=>{F.estado=e.target.value;showHistorial()};
+  document.getElementById('f-paquete').onchange=e=>{F.paquete=e.target.value;showHistorial()};
+  document.getElementById('btn-pdf-hist').onclick=()=>genPDFHistorial(filtered);
+}
+
+function getPkColor(nombre){
+  if(!nombre)return'var(--mu2)';
+  if(nombre.includes('Seguro')||nombre.includes('Básico'))return'#888880';
+  if(nombre.includes('Total')||nombre.includes('Completo'))return'var(--y)';
+  if(nombre.includes('Élite')||nombre.includes('Elite')||nombre.includes('Premium'))return'var(--blue)';
+  return'var(--mu2)';
+}
+
+// ── RENTABILIDAD ──────────────────────────────────────────────────────────────
+function showRentabilidad(){
+  currentView='rentabilidad';
+  const filtered=applyFilters(getHist());
+  const aprobadas=filtered.filter(h=>h.estado==='Aprobada');
+
+  // Group by package
+  const grupos={
+    'Hogar Seguro':{id:'basico',items:[],color:'#888880',expectedMargin:0.396},
+    'Blindaje Total':{id:'completo',items:[],color:'#f5c800',expectedMargin:0.383},
+    'Blindaje Élite':{id:'premium',items:[],color:'#4ac8f0',expectedMargin:0.391},
+    'Otros':{id:'otros',items:[],color:'#555550',expectedMargin:0.38}
+  };
+
+  aprobadas.forEach(h=>{
+    let g='Otros';
+    if(h.paquete?.includes('Seguro')||h.paquete?.includes('Básico'))g='Hogar Seguro';
+    else if(h.paquete?.includes('Total')||h.paquete?.includes('Completo'))g='Blindaje Total';
+    else if(h.paquete?.includes('Élite')||h.paquete?.includes('Elite'))g='Blindaje Élite';
+    grupos[g].items.push(h);
+  });
+
+  const maxCount=Math.max(...Object.values(grupos).map(g=>g.items.length),1);
+  const totalAprobadas=aprobadas.length||1;
+
+  function pkStats(g){
+    const items=g.items;
+    if(!items.length)return null;
+    const sumPrecio=items.reduce((a,h)=>a+(h.precio||0),0);
+    const sumUtil=items.reduce((a,h)=>a+(h.utilidad||0),0);
+    const sumCosto=items.reduce((a,h)=>a+(h.costoTotal||0),0);
+    const promPrecio=sumPrecio/items.length;
+    const promUtil=sumUtil/items.length;
+    const margenReal=sumPrecio>0?sumUtil/sumPrecio:0;
+    return{count:items.length,sumPrecio,sumUtil,sumCosto,promPrecio,promUtil,margenReal};
+  }
+
+  const totalVendido=aprobadas.reduce((a,h)=>a+(h.precio||0),0);
+
+  setCnt(`
+  <button class="btn-sm" id="btn-back">← Volver</button>
+  <div class="st" style="margin-top:14px"><span class="st-n">💰</span><span class="st-h">Rentabilidad</span></div>
+  <div class="ibar"><strong>Período:</strong> ${periodoLabel()} · ${aprobadas.length} servicios aprobados · ${fmt(totalVendido)} vendido total</div>
+  ${aprobadas.length===0?`<div class="empty"><div class="empty-icon">💰</div><div class="empty-title">Sin servicios aprobados</div><div class="empty-sub">Cambia el período o aprueba cotizaciones en el historial.</div></div>`:''}
+  ${Object.entries(grupos).filter(([,g])=>g.items.length>0).map(([nombre,g])=>{
+    const s=pkStats(g);if(!s)return'';
+    const barW=Math.round(s.count/maxCount*100);
+    const shareW=Math.round(s.count/totalAprobadas*100);
+    const margenClass=s.margenReal>=0.35?'mb-ok':s.margenReal>=0.25?'mb-warn':'mb-crit';
+    const margenLabel=s.margenReal>=0.35?'✓ Saludable':s.margenReal>=0.25?'⚠ Ajustado':'❌ Crítico';
+    const utilDisp=s.sumUtil>0?fmt(s.sumUtil):'⚠ sin datos';
+    const margenDisp=s.sumUtil>0?pct(s.margenReal):'⚠ sin datos';
+    return`<div class="pk-bar-wrap">
+      <div class="pk-bar-hdr">
+        <div>
+          <div class="pk-bar-name" style="color:${g.color}">${nombre}</div>
+          <div class="pk-bar-count">${s.count} servicios · ${shareW}% del mix</div>
+        </div>
+        <span class="margin-badge ${margenClass}">${margenLabel} ${margenDisp}</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${barW}%;background:${g.color}"></div></div>
+      <div class="pk-stats">
+        <div class="pk-stat"><div class="pk-stat-val" style="color:var(--y)">${fmt(s.promPrecio)}</div><div class="pk-stat-lbl">Precio prom.</div></div>
+        <div class="pk-stat"><div class="pk-stat-val" style="color:var(--green)">${utilDisp}</div><div class="pk-stat-lbl">Utilidad total</div></div>
+        <div class="pk-stat"><div class="pk-stat-val" style="color:var(--tx)">${fmt(s.sumPrecio)}</div><div class="pk-stat-lbl">Vendido total</div></div>
+      </div>
+      ${s.margenReal>0&&s.margenReal<0.30?`<div style="margin-top:8px;padding:8px 10px;background:#1a0000;border:1px solid var(--red);border-left:3px solid var(--red);font-size:10px;color:var(--red)">⚠ Margen bajo ${pct(s.margenReal)} — revisar si los costos de garantía/refuerzo están siendo capturados correctamente en cada cotización.</div>`:''}
+    </div>`;
+  }).join('')}
+  ${aprobadas.length>0?`
+  <!-- Tabla comparativa -->
+  <div class="sec-hdr" style="margin-top:6px">TABLA COMPARATIVA</div>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Paquete</th><th>Servicios</th><th>Precio prom.</th><th>Utilidad prom.</th><th>Mix</th></tr></thead>
+      <tbody>
+        ${Object.entries(grupos).filter(([,g])=>g.items.length>0).map(([nombre,g])=>{
+          const s=pkStats(g);if(!s)return'';
+          const utilPromDisp=s.sumUtil>0?fmt(s.promUtil):'⚠ sin datos';
+          return`<tr>
+            <td style="font-weight:600;color:${g.color}">${nombre}</td>
+            <td style="text-align:center">${s.count}</td>
+            <td style="color:var(--y)">${fmt(s.promPrecio)}</td>
+            <td style="color:var(--green)">${utilPromDisp}</td>
+            <td><div style="background:${g.color};height:4px;border-radius:2px;width:${Math.round(s.count/totalAprobadas*100)}%"></div><span style="font-size:9px;color:var(--mu3)">${Math.round(s.count/totalAprobadas*100)}%</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+  ${aprobadas.some(h=>!h.utilidad)?`<div class="ibar rd" style="margin-top:8px"><strong>Datos incompletos:</strong> Algunas cotizaciones no tienen utilidad registrada. Esto ocurre con registros anteriores a v8. Los datos de rentabilidad son parciales.</div>`:''}
+  <button class="cta oy" id="btn-pdf-rent">📄 Exportar a PDF</button>`:''}
+  <button class="cta sec" id="btn-back2">← Volver al inicio</button>
+  `);
+
+  document.getElementById('btn-back').onclick=showHome;
+  document.getElementById('btn-back2').onclick=showHome;
+  if(document.getElementById('btn-pdf-rent'))
+    document.getElementById('btn-pdf-rent').onclick=()=>genPDFRentabilidad(aprobadas,grupos,pkStats);
+}
+
+// ── VENDEDORES ────────────────────────────────────────────────────────────────
+function showVendedores(){
+  currentView='vendedores';
+  const filtered=applyFilters(getHist());
+
+  // Group by seller
+  const sellers={};
+  filtered.forEach(h=>{
+    const s=h.seller||'Sin asignar';
+    if(!sellers[s])sellers[s]={total:[],aprobadas:[],precio:0,util:0};
+    sellers[s].total.push(h);
+    if(h.estado==='Aprobada'){sellers[s].aprobadas.push(h);sellers[s].precio+=(h.precio||0);sellers[s].util+=(h.utilidad||0)}
+  });
+
+  const sortedSellers=Object.entries(sellers).sort((a,b)=>b[1].precio-a[1].precio);
+
+  setCnt(`
+  <button class="btn-sm" id="btn-back">← Volver</button>
+  <div class="st" style="margin-top:14px"><span class="st-n">👤</span><span class="st-h">Por vendedor</span></div>
+  <div class="ibar"><strong>Período:</strong> ${periodoLabel()} · ${filtered.length} cotizaciones total</div>
+  ${sortedSellers.length===0?`<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">Sin datos</div></div>`:
+  sortedSellers.map(([nombre,d])=>{
+    const tasa=d.total.length?d.aprobadas.length/d.total.length:0;
+    const ticket=d.aprobadas.length?d.precio/d.aprobadas.length:0;
+    const tasaklass=tasa>=0.5?'var(--green)':tasa>=0.3?'var(--orange)':'var(--red)';
+    return`<div style="background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:8px">
+      <div style="font-size:15px;font-weight:700;color:var(--tx);margin-bottom:10px">👤 ${nombre}</div>
+      <div class="g2" style="gap:8px">
+        <div style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--y)">${fmt(d.precio)}</div><div style="font-size:9px;color:var(--mu2);text-transform:uppercase;letter-spacing:.08em">Vendido</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:700;color:${tasaklass}">${pct(tasa)}</div><div style="font-size:9px;color:var(--mu2);text-transform:uppercase;letter-spacing:.08em">Tasa cierre</div></div>
+        <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:var(--blue)">${d.total.length}</div><div style="font-size:9px;color:var(--mu2);text-transform:uppercase;letter-spacing:.08em">Cotizaciones</div></div>
+        <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:var(--tx)">${fmt(ticket)}</div><div style="font-size:9px;color:var(--mu2);text-transform:uppercase;letter-spacing:.08em">Ticket prom.</div></div>
+      </div>
+    </div>`;
+  }).join('')}
+  <button class="cta oy" id="btn-pdf-sell">📄 Exportar a PDF</button>
+  <button class="cta sec" id="btn-back2">← Volver al inicio</button>
+  `);
+  document.getElementById('btn-back').onclick=showHome;
+  document.getElementById('btn-back2').onclick=showHome;
+  document.getElementById('btn-pdf-sell').onclick=()=>genPDFVendedores(filtered,sellers);
+}
+
+// ── PDF GENERATORS ────────────────────────────────────────────────────────────
+function getLogoTag(){
+  const url=getEmp().logo_url;
+  if(url)return`<img src="${url}" style="height:44px;object-fit:contain;display:block" onerror="this.style.display='none'">`;
+  return`<div style="font-size:24px;font-weight:900;color:#111">PLAGA<span style="color:#f5c800">W</span>AY</div>`;
+}
+
+function pdfHeader(titulo,subtitulo){
+  const emp=getEmp();
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  return`<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #f5c800;padding-bottom:12px;margin-bottom:18px">
+    <div>${getLogoTag()}<div style="font-size:10px;color:#888;margin-top:4px">${emp.tagline||''}</div></div>
+    <div style="text-align:right">
+      <div style="font-size:9px;color:#f5a800;font-weight:900;margin-bottom:3px">${emp.licSanitaria||''}</div>
+      <div style="font-size:18px;font-weight:900;text-transform:uppercase;line-height:1.1">${titulo}</div>
+      <div style="font-size:11px;color:#666;margin-top:3px">${subtitulo}</div>
+      <div style="font-size:10px;color:#aaa;margin-top:2px">Generado: ${fecha} · ${periodoLabel()}</div>
+    </div>
+  </div>`;
+}
+
+function pdfOpen(titulo){
+  const w=window.open('','_blank');
+  if(!w){toast('Permite ventanas emergentes');return null}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;color:#111;background:#fff;padding:0}
+  table{width:100%;border-collapse:collapse}th{background:#f5f5f5;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:7px 10px;border:1px solid #ddd;text-align:left}
+  td{padding:7px 10px;border:1px solid #eee;font-size:11px;vertical-align:top}
+  tr:nth-child(even) td{background:#fafafa}
+  .total-row td{background:#f5f5f5;font-weight:700;border-top:2px solid #ccc}
+  @media print{#pbar{display:none!important}}</style>
+  </head><body>
+  <div id="pbar" style="padding:12px 20px;background:#f5f5f5;border-bottom:1px solid #ddd;display:flex;align-items:center;gap:12px">
+    <button onclick="window.print()" style="background:#f5c800;border:none;padding:9px 20px;font-weight:900;font-size:13px;cursor:pointer">🖨️ Guardar como PDF</button>
+    <button onclick="window.close()" style="background:#eee;border:none;padding:9px 14px;font-size:12px;cursor:pointer;margin-left:auto">✕</button>
+  </div>
+  <div style="max-width:900px;margin:0 auto;padding:24px 28px">`);
+  return w;
+}
+
+function genPDFHistorial(data){
+  const emp=getEmp();
+  const w=pdfOpen('Historial Plagaway');if(!w)return;
+  const totalPrecio=data.reduce((a,h)=>a+(h.precio||0),0);
+  const aprobadas=data.filter(h=>h.estado==='Aprobada');
+  const totalVendido=aprobadas.reduce((a,h)=>a+(h.precio||0),0);
+  const tasa=data.length?aprobadas.length/data.length:0;
+
+  w.document.write(`
+  ${pdfHeader('REPORTE DE HISTORIAL',`${periodoLabel()} · ${data.length} cotizaciones`)}
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">
+    ${[
+      ['Total cotizado',fmt(totalPrecio),'#333'],
+      ['Total vendido',fmt(totalVendido),'#267326'],
+      ['Tasa de cierre',pct(tasa),tasa>=0.5?'#267326':tasa>=0.3?'#cc7700':'#cc2200'],
+      ['Ticket promedio',fmt(aprobadas.length?totalVendido/aprobadas.length:0),'#0066aa']
+    ].map(([l,v,c])=>`<div style="background:#f9f9f9;border:1px solid #eee;border-left:3px solid ${c};padding:10px">
+      <div style="font-size:16px;font-weight:900;color:${c}">${v}</div>
+      <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">${l}</div>
+    </div>`).join('')}
+  </div>
+  <!-- Tabla -->
+  <table>
+    <thead><tr>
+      <th>#</th><th>Fecha</th><th>Cliente</th><th>Paquete</th><th>Plaga</th><th>Precio</th><th>Estado</th><th>Vendedor</th>
+    </tr></thead>
+    <tbody>
+      ${data.map((h,i)=>`<tr>
+        <td style="color:#aaa;font-size:10px">${i+1}</td>
+        <td style="white-space:nowrap;font-size:10px">${fmtD(h.ts)}</td>
+        <td><strong>${h.clientName||'—'}</strong>${h.clientAddr?`<br><span style="color:#aaa;font-size:9px">${h.clientAddr.slice(0,35)}</span>`:''}</td>
+        <td style="color:#996600;font-weight:600;font-size:10px">${h.paquete||'—'}</td>
+        <td style="font-size:10px;color:#555">${h.plaga||'—'}</td>
+        <td style="font-weight:700;color:#267326">${fmt(h.precio||0)}</td>
+        <td><span style="display:inline-block;padding:2px 7px;font-size:9px;font-weight:800;border-radius:2px;border:1px solid;${
+          (h.estado||'Borrador')==='Aprobada'?'background:#e6f5e6;color:#267326;border-color:#72c040':
+          h.estado==='Rechazada'?'background:#fce;color:#cc0000;border-color:#ff4444':
+          h.estado==='Enviada'?'background:#e6f0ff;color:#0055cc;border-color:#4ac8f0':
+          'background:#f5f5f5;color:#888;border-color:#ccc'}">${h.estado||'Borrador'}</span></td>
+        <td style="font-size:10px;color:#666">${h.seller||'—'}</td>
+      </tr>`).join('')}
+      <tr class="total-row">
+        <td colspan="5" style="text-align:right;font-size:9px;color:#888">TOTAL ${data.length} registros</td>
+        <td style="color:#267326">${fmt(totalPrecio)}</td><td colspan="2"></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:16px;padding:10px 14px;background:#f9f9f9;border-left:3px solid #f5c800;font-size:9px;color:#555">${emp.nombre} · ${emp.tel} · ${emp.licSanitaria||''} · ${emp.copyright||'© PLAGAWAY 2026'}</div>
+  </div></body></html>`);
+  w.document.close();
+  toast('PDF listo');
+}
+
+function genPDFRentabilidad(aprobadas,grupos,pkStats){
+  const emp=getEmp();
+  const w=pdfOpen('Rentabilidad Plagaway');if(!w)return;
+  const totalVendido=aprobadas.reduce((a,h)=>a+(h.precio||0),0);
+  const totalUtil=aprobadas.reduce((a,h)=>a+(h.utilidad||0),0);
+
+  const gruposData=Object.entries(grupos).filter(([,g])=>g.items.length>0);
+
+  w.document.write(`
+  ${pdfHeader('REPORTE DE RENTABILIDAD',`${periodoLabel()} · ${aprobadas.length} servicios aprobados`)}
+  <!-- Resumen ejecutivo -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+    <div style="background:#f9f9f9;border:1px solid #eee;border-left:3px solid #f5c800;padding:12px">
+      <div style="font-size:20px;font-weight:900;color:#267326">${fmt(totalVendido)}</div>
+      <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Total vendido</div>
+      <div style="font-size:10px;color:#555;margin-top:4px">${aprobadas.length} servicios aprobados</div>
+    </div>
+    <div style="background:#f9f9f9;border:1px solid #eee;border-left:3px solid #72c040;padding:12px">
+      <div style="font-size:20px;font-weight:900;color:#267326">${totalUtil>0?fmt(totalUtil):'⚠ sin datos'}</div>
+      <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Utilidad empresa acumulada</div>
+      <div style="font-size:10px;color:#555;margin-top:4px">${totalUtil>0?pct(totalUtil/totalVendido)+' margen real':'Campo utilidad en cotizaciones v8+'}</div>
+    </div>
+    <div style="background:#f9f9f9;border:1px solid #eee;border-left:3px solid #4ac8f0;padding:12px">
+      <div style="font-size:20px;font-weight:900;color:#0055aa">${fmt(aprobadas.length?totalVendido/aprobadas.length:0)}</div>
+      <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Ticket promedio</div>
+      <div style="font-size:10px;color:#555;margin-top:4px">Por servicio aprobado</div>
+    </div>
+  </div>
+  <!-- Por paquete -->
+  <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #eee">DESGLOSE POR PAQUETE</div>
+  ${gruposData.map(([nombre,g])=>{
+    const s=pkStats(g);if(!s)return'';
+    const margenReal=s.margenReal;
+    const margenColor=margenReal>=0.35?'#267326':margenReal>=0.25?'#cc7700':'#cc0000';
+    const margenLabel=margenReal>0?pct(margenReal):'⚠ sin datos';
+    const share=Math.round(s.count/aprobadas.length*100);
+    return`<div style="border:1px solid #eee;padding:14px;margin-bottom:10px;border-left:4px solid ${g.color}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:15px;font-weight:900;color:#111">${nombre}</div>
+          <div style="font-size:10px;color:#888;margin-top:2px">${s.count} servicios · ${share}% del mix de ventas</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;font-weight:900;color:${margenColor};background:${margenReal>=0.35?'#e6f5e6':margenReal>=0.25?'#fff5e6':'#fce'};padding:4px 10px;border-radius:2px">${margenReal>0?'Margen '+margenLabel:'Sin datos utilidad'}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        ${[
+          ['Vendido total',fmt(s.sumPrecio),'#267326'],
+          ['Utilidad total',s.sumUtil>0?fmt(s.sumUtil):'⚠ sin datos',s.sumUtil>0?'#267326':'#cc7700'],
+          ['Precio promedio',fmt(s.promPrecio),'#996600'],
+          ['Utilidad promedio',s.sumUtil>0?fmt(s.promUtil):'⚠ sin datos',s.sumUtil>0?'#267326':'#cc7700']
+        ].map(([l,v,c])=>`<div style="text-align:center;padding:8px;background:#fafafa;border:1px solid #eee">
+          <div style="font-size:14px;font-weight:700;color:${c}">${v}</div>
+          <div style="font-size:8px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-top:2px">${l}</div>
+        </div>`).join('')}
+      </div>
+      <!-- Bar -->
+      <div style="margin-top:10px">
+        <div style="font-size:8px;color:#aaa;margin-bottom:3px">Participación en ventas (${share}%)</div>
+        <div style="background:#eee;height:5px;border-radius:3px;overflow:hidden"><div style="background:${g.color};height:100%;width:${share}%"></div></div>
+      </div>
+    </div>`;
+  }).join('')}
+  <!-- Tabla comparativa -->
+  <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#888;margin:14px 0 10px;padding-bottom:5px;border-bottom:1px solid #eee">TABLA COMPARATIVA</div>
+  <table>
+    <thead><tr><th>Paquete</th><th>Servicios</th><th>Mix</th><th>Precio prom.</th><th>Utilidad prom.</th><th>Margen real</th><th>Total vendido</th></tr></thead>
+    <tbody>
+      ${gruposData.map(([nombre,g])=>{
+        const s=pkStats(g);if(!s)return'';
+        const margenColor=s.margenReal>=0.35?'#267326':s.margenReal>=0.25?'#cc7700':'#cc0000';
+        return`<tr>
+          <td style="font-weight:600;color:#333;border-left:3px solid ${g.color}">${nombre}</td>
+          <td style="text-align:center">${s.count}</td>
+          <td>${Math.round(s.count/aprobadas.length*100)}%</td>
+          <td style="color:#996600;font-weight:600">${fmt(s.promPrecio)}</td>
+          <td style="color:#267326">${s.sumUtil>0?fmt(s.promUtil):'⚠'}</td>
+          <td style="font-weight:700;color:${margenColor}">${s.margenReal>0?pct(s.margenReal):'⚠ sin datos'}</td>
+          <td style="font-weight:700;color:#267326">${fmt(s.sumPrecio)}</td>
+        </tr>`;
+      }).join('')}
+      <tr class="total-row">
+        <td>TOTAL</td><td style="text-align:center">${aprobadas.length}</td><td>100%</td>
+        <td>${fmt(totalVendido/aprobadas.length)}</td>
+        <td style="color:#267326">${totalUtil>0?fmt(totalUtil/aprobadas.length):'⚠'}</td>
+        <td style="color:${totalUtil>0?(totalUtil/totalVendido>=0.35?'#267326':'#cc7700'):'#888'}">${totalUtil>0?pct(totalUtil/totalVendido):'⚠'}</td>
+        <td style="color:#267326">${fmt(totalVendido)}</td>
+      </tr>
+    </tbody>
+  </table>
+  ${aprobadas.some(h=>!h.utilidad)?`<div style="margin-top:12px;padding:9px 12px;background:#fff5e6;border-left:3px solid #cc7700;font-size:10px;color:#665500">⚠ Algunas cotizaciones no tienen utilidad registrada. Esto ocurre con registros anteriores a la versión 8 del cotizador. Los datos de margen son parciales para el período seleccionado.</div>`:''}
+  <div style="margin-top:16px;padding:10px 14px;background:#f9f9f9;border-left:3px solid #f5c800;font-size:9px;color:#555">${emp.nombre} · ${emp.tel} · ${emp.licSanitaria||''} · ${emp.copyright||'© PLAGAWAY 2026'}</div>
+  </div></body></html>`);
+  w.document.close();
+  toast('PDF listo');
+}
+
+function genPDFVendedores(filtered,sellers){
+  const emp=getEmp();
+  const w=pdfOpen('Vendedores Plagaway');if(!w)return;
+  const sortedSellers=Object.entries(sellers).sort((a,b)=>b[1].precio-a[1].precio);
+  const totalVendido=Object.values(sellers).reduce((a,s)=>a+s.precio,0);
+
+  w.document.write(`
+  ${pdfHeader('DESEMPEÑO POR VENDEDOR',`${periodoLabel()} · ${filtered.length} cotizaciones`)}
+  <table>
+    <thead><tr><th>Vendedor</th><th>Cotizaciones</th><th>Aprobadas</th><th>Tasa cierre</th><th>Vendido</th><th>Ticket prom.</th><th>Participación</th></tr></thead>
+    <tbody>
+      ${sortedSellers.map(([nombre,d])=>{
+        const tasa=d.total.length?d.aprobadas.length/d.total.length:0;
+        const ticket=d.aprobadas.length?d.precio/d.aprobadas.length:0;
+        const share=totalVendido>0?d.precio/totalVendido:0;
+        const tasaColor=tasa>=0.5?'#267326':tasa>=0.3?'#cc7700':'#cc0000';
+        return`<tr>
+          <td style="font-weight:700;color:#111">${nombre}</td>
+          <td style="text-align:center">${d.total.length}</td>
+          <td style="text-align:center;color:#267326;font-weight:600">${d.aprobadas.length}</td>
+          <td style="font-weight:700;color:${tasaColor}">${pct(tasa)}</td>
+          <td style="font-weight:700;color:#267326">${fmt(d.precio)}</td>
+          <td style="color:#996600">${fmt(ticket)}</td>
+          <td>${pct(share)}</td>
+        </tr>`;
+      }).join('')}
+      <tr class="total-row">
+        <td>TOTAL</td>
+        <td style="text-align:center">${filtered.length}</td>
+        <td style="text-align:center;color:#267326">${filtered.filter(h=>h.estado==='Aprobada').length}</td>
+        <td>${pct(filtered.length?filtered.filter(h=>h.estado==='Aprobada').length/filtered.length:0)}</td>
+        <td style="color:#267326">${fmt(totalVendido)}</td>
+        <td>${fmt(totalVendido/(filtered.filter(h=>h.estado==='Aprobada').length||1))}</td>
+        <td>100%</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:16px;padding:10px 14px;background:#f9f9f9;border-left:3px solid #f5c800;font-size:9px;color:#555">${emp.nombre} · ${emp.tel} · ${emp.licSanitaria||''}</div>
+  </div></body></html>`);
+  w.document.close();
+  toast('PDF listo');
+}
+
+function toast(msg){
+  const t=document.createElement('div');t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--y);color:#0d0d0d;padding:10px 20px;font-weight:900;font-size:12px;z-index:999;white-space:nowrap;border-radius:2px';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+
+tryPin();
+</script>
+</body>
+</html>
